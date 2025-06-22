@@ -94,7 +94,6 @@ Verifikasi email pelanggan.
     "status": "error"
 }
 ```
-
 ### **Resend OTP pake token_verifikasi**
 ### 🔍 POST `/resend-otp`
 **Header:**
@@ -927,3 +926,53 @@ Authorization: Bearer {token}
 }
 ```
 
+## 6. **Merchandise**
+### GET `/merch`
+
+Melihat list merch
+
+**Response Sukses:**
+```json
+{
+    "error": false,
+    "message": "Daftar merchandise berhasil diambil",
+    "listMerchandise": [
+        {
+            "idMerchandise": 1,
+            "namaMerchandise": "Cap Pink",
+            "hargaMerchandise": 20000,
+            "deskripsiMerchandise": "Topi kasual warna pink lucu",
+            "stok": 10,
+            "fotoMerchandise": "path_to_file"
+        },
+        .....
+    ],
+    "status": "sukses"
+}
+```
+### GET `/merch/{idMerch}`
+
+Melihat 1 merch
+
+**Response Sukses:**
+```json
+{
+    "error": false,
+    "message": "Detail merchandise berhasil diambil",
+    "detailMerchandise": {
+        "idMerchandise": 1,
+        "namaMerchandise": "Cap Pink",
+        "hargaMerchandise": 20000,
+        "deskripsiMerchandise": "Topi kasual warna pink lucu",
+        "stok": 10,
+        "fotoMerchandise": "path_to_file"
+    }
+}
+```
+**Response error 404:**
+```json
+{
+    "error": true,
+    "message": "Merchandise tidak ditemukan"
+}
+```
