@@ -296,7 +296,7 @@ Ambil data pelanggan dari db.
 ```
 Authorization: Bearer {token} 
 ```
-Melihat data pembayaran membership.
+Beli membership.
 
 **Request Body:**
 ```json
