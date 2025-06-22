@@ -886,4 +886,44 @@ Content-Type: multipart/form-data
     "message": "Token tidak valid atau kedaluwarsa"
 }
 ```
+### GET `/event/nota/{idPembelianEvent}`
+
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+**Response success:**
+```json
+{
+    "error": false,
+    "notaPembelianEvent": {
+        "noPembelianEvent": 51,
+        "tanggalPembelianEvent": "2025-06-22 19:41:30",
+        "namaPelanggan": "zhenya",
+        "teleponPelanggan": "081234567890",
+        "emailPelanggan": "krumpyayee@gmail.com",
+        "totalPembelianEvent": 70000,
+        "statusPembelianEvent": "Belum bayar",
+        "statusPembayaranEvent": "Menunggu Verifikasi",
+        "detailEvent": [
+            {
+                "no": 1,
+                "namaEvent": "Kreasi Sablon",
+                "hargaEvent": 70000,
+                "jadwalEvent": "22-06-2025",
+                "jumlahTiket": 1,
+                "subtotalEvent": 70000
+            }
+        ]
+    }
+}
+```
+**Response error 404:**
+```json
+{
+    "error": true,
+    "message": "Data pembelian tidak ditemukan atau bukan milik Anda"
+}
+```
 
