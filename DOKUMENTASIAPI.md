@@ -3,8 +3,7 @@
 
 ## Base Url : http://localhost:8000/api
 
-##  1. **Register Pelanggan**
-
+##  1. **Register/login Pelanggan**
 ### 🔍 POST `/register`
 ```
 Content-Type: application/json
@@ -32,7 +31,7 @@ Untuk Register Pelanggan.
         "email": "krumpayee@gmail.com",
         "namaPelanggan": "zhenya",
         "token_verifikasi": "token",
-        "otp": number
+        "otp": string
     }
 }
 ```
@@ -62,9 +61,7 @@ Respon 2:
     }
 }
 ```
-
-##  2. **Verifikasi Email**
-
+### **Verifikasi Email**
 ### 🔍 POST `/verify-email`
 **Header:**
 ```
@@ -98,8 +95,7 @@ Verifikasi email pelanggan.
 }
 ```
 
-##  3. **Resedn OTP pake token_verifikasi**
-
+### **Resend OTP pake token_verifikasi**
 ### 🔍 POST `/resend-otp`
 **Header:**
 ```
@@ -173,7 +169,97 @@ Content-Type: application/json
 ```
 
 
-## 💳 4. **Profil pelanggan**
+##   2. Reset Password
+### 🔍 Request otp reset password POST `/send-reset-otp`
+**Header:**
+```
+Content-Type: application/json
+```
+**Request Body:**
+```json
+{
+  "email": "krumpyayee@gmail.com"
+}
+
+```
+
+**Response sukses:**
+```json
+{
+    "message": "Kode OTP sudah dikirim ke email.",
+    "status": "success",
+    "otp": 591909
+}
+```
+
+**Response error 422:**
+```json
+{
+    "message": "Email wajib diisi.",
+    "errors": {
+        "email": [
+            "Email wajib diisi."
+        ]
+    }
+}
+```
+
+### 🔍 Masukin otp dari email POST `/verify-reset-otp`
+**Header:**
+```
+Content-Type: application/json
+```
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "message": "success",
+    "resetResult": {
+        "email": "krumpyayee@gmail.com",
+        "token_reset": "token"
+    }
+}
+```
+
+**Response error 422:**
+```json
+{
+    "error": true,
+    "message": "OTP salah."
+}
+```
+
+
+### 🔍 reset password POST `/verify-reset-otp`
+**Header:**
+```
+Content-Type: application/json
+Accept: application/son
+```
+
+**Response sukses:**
+```json
+{
+    "message": "Password berhasil diubah.",
+    "status": "success"
+}
+```
+
+**Response error 422:**
+```json
+{
+    "message": "Konfirmasi password tidak cocok",
+    "errors": {
+        "password": [
+            "Konfirmasi password tidak cocok"
+        ]
+    }
+}
+```
+
+
+## 💳 3. **Profil pelanggan**
 ### 🛍  GET `/profil`
 **Header:**
 ```
@@ -204,13 +290,12 @@ Ambil data pelanggan dari db.
 }
 ```
 
-## 💳 5. **Beli Membership**
+## 💳 4. **Beli Membership**
 ### 🛍 POST `/membership`
 **Header:**
 ```
 Authorization: Bearer {token} 
 ```
-
 Melihat data pembayaran membership.
 
 **Request Body:**
@@ -245,8 +330,7 @@ Melihat data pembayaran membership.
 }
 ```
 
-
-## 📤 6  **Liat pembayaran membership**
+### 📤  **Liat pembayaran membership**
 ### POST `/membership/upload-bukti/{idPembayaranMembership}`
 Upload bukti transfer untuk membership.
 **Header:**
@@ -287,8 +371,7 @@ Authorization: Bearer {token}
     "message": "Token tidak ditemukan"
 }
 ```
-
-##  7. **Bayar Membership**
+###  **Bayar Membership**
 ### 📜 GET `/api/membership/upload-bukti/{idPembayaranMembership}`
 **Header:**
 ```
@@ -355,7 +438,7 @@ Ambil status membership pelanggan yang sedang aktif (jika ada).
 ```
 
 
-##  8. **Current Membership**
+###  **Current Membership**
 ### 📜 GET `/membership/current`
 **Header:**
 ```
@@ -396,8 +479,10 @@ lihat membership aktif
 }
 ```
 
-##  9. **Event**
-### List Event 📜 GET `/event`
+##  5. **Event**
+### GET `/event`
+
+Melihat list Event
 
 **Response Sukses:**
 ```json
@@ -422,8 +507,8 @@ lihat membership aktif
     "status": "sukses"
 }
 ```
-### 1 Event 📜 GET `/event/{idEvent}`
-
+### GET `/event/{idEvent}`
+Melihat 1 Event 
 **Response Sukses:**
 ```json
 {
@@ -456,7 +541,10 @@ lihat membership aktif
     "status": "gagal"
 }
 ```
-### Detail Event 📜 GET `/event/detail-event`
+### GET `/event/detail-event`
+
+Lihat foto kegiatan event
+
 **Response sukses:**
 ```json
 {
@@ -473,7 +561,10 @@ lihat membership aktif
     ]
 }
 ```
-### 1 Detail Event 📜 GET `/event/detail-event/{idEvent}`
+### GET `/event/detail-event/{idEvent}`
+
+Lihat 1 Foto Kegiatan event
+
 **Response sukses:**
 ```json
 {
@@ -486,5 +577,162 @@ lihat membership aktif
             "fotoKegiatan": "path_to_file"
         }
     ]
+}
+```
+**Response kalo gada deatil event utk id tsb:**
+```json
+{
+    "error": true,
+    "message": "Tidak ada foto kegiatan untuk event ini.",
+    "fotoKegiatan": []
+}
+```
+### POST `/event/cart`
+
+Membeli event (masuk ke cart)
+
+**Header:**
+```
+Authorization: Bearer {token} 
+Content-Type: application/json
+```
+**Request body:**
+```json
+{
+  "itemsEvent": [
+    {
+      "idEvent": 4,
+      "jumlahTiket": 1
+    },
+    {
+      "idEvent": 5,
+      "jumlahTiket": 1
+    }
+  ]
+}
+
+```
+
+**Response sukse:**
+```json
+{
+    "error": false,
+    "message": "Cart berhasil dibuat",
+    "idPembelianEvent": 48,
+    "totalHargaEvent": 170000,
+    "cartEventItem": [
+        {
+            "idEvent": 4,
+            "namaEvent": "Programmer Cilik",
+            "hargaEvent": 100000,
+            "jumlahTiket": 1,
+            "subtotalEvent": 100000
+        },
+        {
+            "idEvent": 5,
+            "namaEvent": "Kreasi Sablon",
+            "hargaEvent": 70000,
+            "jumlahTiket": 1,
+            "subtotalEvent": 70000
+        }
+    ]
+}
+```
+
+**Response error 422:**
+```json
+{
+    "error": true,
+    "message": "Format itemsEvent tidak valid. Harus array."
+}
+```
+### GET `/event/cart/listcart`
+**Header:**
+
+Lihat isi cart 
+
+```
+Authorization: Bearer {token} 
+```
+
+```json
+{
+    "error": false,
+    "listCart": [
+        {
+            "id_pembelian": 48,
+            "total_pembelian": 170000,
+            "tanggal_pembelian": null,
+            "status_pembelian": "Belum Checkout"
+        },
+        {
+            "id_pembelian": 49,
+            "total_pembelian": 150000,
+            "tanggal_pembelian": null,
+            "status_pembelian": "Belum Checkout"
+        }
+    ]
+}
+```
+### GET `/event/cart/{idPembelianEvent}`
+Lihat detail pembelian di cart
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+**Response Sukses:**
+```json
+{
+    "error": false,
+    "cartDetail": {
+        "idPembelianEvent": 50,
+        "totalHargaEvent": 170000,
+        "statusPembelianEvent": "Belum Checkout",
+        "detailEvent": [
+            {
+                "idEvent": 4,
+                "namaEvent": "Programmer Cilik",
+                "hargaEvent": 100000,
+                "jumlahTiket": 1,
+                "subtotalEvent": 100000
+            },
+            {
+                "idEvent": 5,
+                "namaEvent": "Kreasi Sablon",
+                "hargaEvent": 70000,
+                "jumlahTiket": 1,
+                "subtotalEvent": 70000
+            }
+        ]
+    }
+}
+```
+**Response error 404:**
+```json
+{
+    "error": true,
+    "message": "Cart tidak ditemukan atau kosong."
+}
+```
+### DELETE `/event/cart/{idPembelianEvent}`
+
+Delete salah satu pembelian
+
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+**Response Sukses:**
+```json
+{
+    "error": false,
+    "message": "Cart berhasil dihapus."
+}
+```
+**Response error 404:**
+```json
+{
+    "error": true,
+    "message": "Cart tidak ditemukan atau sudah checkout."
 }
 ```
