@@ -290,7 +290,7 @@ Ambil data pelanggan dari db.
 }
 ```
 
-## 💳 4. **Beli Membership**
+## 💳 4. **Beli (pilih bank) Membership**
 ### 🛍 POST `/membership`
 **Header:**
 ```
@@ -332,7 +332,9 @@ Beli membership.
 
 ### 📤  **Liat pembayaran membership**
 ### GET `/membership/payment`
+
 Lihat pembayaran membership
+
 **Header:**
 ```
 Authorization: Bearer {token} 
@@ -371,7 +373,7 @@ Authorization: Bearer {token}
     "message": "Token tidak ditemukan"
 }
 ```
-###  **Bayar Membership**
+###  **Upload Bukti Bayar Membership**
 ### 📜 GET `/api/membership/upload-bukti/{idPembayaranMembership}`
 **Header:**
 ```
@@ -400,6 +402,7 @@ Upload bukti bayar membership
     "message": "Token tidak ditemukan"
 }
 ```
+
 
 
 ### 📄 GET `/api/membership/current`
@@ -660,16 +663,16 @@ Authorization: Bearer {token}
     "error": false,
     "listCart": [
         {
-            "id_pembelian": 48,
-            "total_pembelian": 170000,
-            "tanggal_pembelian": null,
-            "status_pembelian": "Belum Checkout"
+            "idPembelianEvent": 50,
+            "totalPembelianEvent": 170000,
+            "tanggalPembelianEvent": null,
+            "statusPembelianEvent": "Belum Checkout"
         },
         {
-            "id_pembelian": 49,
-            "total_pembelian": 150000,
-            "tanggal_pembelian": null,
-            "status_pembelian": "Belum Checkout"
+            "idPembelianEvent": 51,
+            "totalPembelianEvent": 70000,
+            "tanggalPembelianEvent": null,
+            "statusPembelianEvent": "Belum Checkout"
         }
     ]
 }
@@ -715,7 +718,6 @@ Authorization: Bearer {token}
 }
 ```
 ### DELETE `/event/cart/{idPembelianEvent}`
-
 Delete salah satu pembelian
 
 **Header:**
@@ -734,5 +736,153 @@ Authorization: Bearer {token}
 {
     "error": true,
     "message": "Cart tidak ditemukan atau sudah checkout."
+}
+```
+### POST `/event/checkout/{idPembelianEvent}`
+
+Checkout salah satu pembelian
+
+**Header:**
+```
+Authorization: Bearer {token} 
+Content-Type: application/json
+```
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "message": "Checkout berhasil",
+    "pembelianEventResponse": {
+        "idPembelianEvent": 51,
+        "totalEvent": 70000,
+        "statusPembelianEvent": "Belum bayar",
+        "tanggalPembelianEvent": "2025-06-22T12:41:30.395491Z",
+        "detailEvent": [
+            {
+                "idDetailPembelianEvent": 68,
+                "namaEvent": "Kreasi Sablon",
+                "jumlahTiket": 1
+            }
+        ]
+    }
+}
+```
+
+**Response gagal:**
+```json
+{
+    "error": true,
+    "message": "Checkout gagal: Checkout gagal: Data pembelian atau event tidak ditemukan."
+}
+```
+### POST `/event/pembayaran/pilih-bank`
+
+Memilih bank untuk pembayaran tiket event. Pembelian yang dibayar adalah pembelian yang dibuat paling lama
+
+**Header:**
+```
+Authorization: Bearer {token} 
+Content-Type: application/json
+```
+
+**Request body:**
+```json
+{
+    "bankPengirim": "BCA"
+}
+```
+
+**Response success:**
+```json
+{
+    "error": false,
+    "message": "Bank berhasil dipilih. Silakan lakukan transfer manual.",
+    "dataPembayaranEvent": {
+        "idPembayaranEvent": 25,
+        "statusPembayaranEvent": "Menunggu Pembayaran",
+        "bankPengirim": "BCA",
+        "totalHargaEvent": 70000
+    }
+}
+```
+**Response error 404**
+```json
+{
+    "error": true,
+    "message": "Tidak ada pembelian event aktif atau pembayaran sudah dibuat."
+}
+```
+**Response error 401**
+```json
+{
+    "message": "Token tidak ditemukan"
+}
+```
+### GET `/event/pembayaran/{idPembelianEvent}`
+
+Melihat detail pembayaran pelanggan sesuai token
+
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+**Response success:**
+```json
+{
+    "error": false,
+    "detailBayarEvent": {
+        "idPembayaranEvent": 25,
+        "idPembelianEvent": 50,
+        "totalHargaEvent": 70000,
+        "tanggalBayarEvent": null,
+        "statusPembayaranEvent": "Menunggu Pembayaran",
+        "bankEvent": "BCA",
+        "detailEvent": [
+            {
+                "namaEvent": "Programmer Cilik",
+                "jumlahTiket": 1,
+                "hargaEvent": 100000
+            },
+            {
+                "namaEvent": "Kreasi Sablon",
+                "jumlahTiket": 1,
+                "hargaEvent": 70000
+            }
+        ]
+    }
+}
+```
+**Response error 404:**
+```json
+{
+    "error": true,
+    "message": "Data pembelian tidak ditemukan atau bukan milik Anda"
+}
+```
+### POST `/event/pembayaran/{idPembayaranEvent}/upload-bukti`
+
+Upload bukti bayar event
+
+**Header:**
+```
+Authorization: Bearer {token} 
+Content-Type: multipart/form-data
+```
+**Request Body:**
+* `bukti_transfer`: file gambar (jpg, jpeg, png)
+
+**Response success:**
+```json
+{
+    "error": false,
+    "message": "Bukti pembayaran berhasil diupload.",
+    "urlBuktiBayarEvent": "http://localhost:8000/storage/bukti-event/buktiBayar_event685809371e2ed.jpg"
+}
+```
+**Response error 401:**
+```json
+{
+    "message": "Token tidak valid atau kedaluwarsa"
 }
 ```
