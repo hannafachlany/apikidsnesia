@@ -331,8 +331,8 @@ Beli membership.
 ```
 
 ### 📤  **Liat pembayaran membership**
-### POST `/membership/upload-bukti/{idPembayaranMembership}`
-Upload bukti transfer untuk membership.
+### GET `/membership/payment`
+Lihat pembayaran membership
 **Header:**
 ```
 Authorization: Bearer {token} 
