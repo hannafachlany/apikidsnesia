@@ -61,8 +61,12 @@ Respon 2:
     }
 }
 ```
-### **Verifikasi Email**
+
 ### 🔍 POST `/verify-email`
+```
+Verifikasi Email
+```
+
 **Header:**
 ```
 Authorization: Bearer {token} (pake token_verifikasi)
@@ -94,8 +98,12 @@ Verifikasi email pelanggan.
     "status": "error"
 }
 ```
-### **Resend OTP pake token_verifikasi**
+
 ### 🔍 POST `/resend-otp`
+```
+Resend OTP pake token_verifikasi
+```
+
 **Header:**
 ```
 Authorization: Bearer {token} (pake token_verifikasi)
@@ -168,8 +176,11 @@ Content-Type: application/json
 ```
 
 
-##   2. Reset Password
-### 🔍 Request otp reset password POST `/send-reset-otp`
+##  2. Reset Password
+###  POST `/send-reset-email`
+```
+🔍 Request otp reset password
+```
 **Header:**
 ```
 Content-Type: application/json
@@ -203,10 +214,22 @@ Content-Type: application/json
 }
 ```
 
-### 🔍 Masukin otp dari email POST `/verify-reset-otp`
+###  POST `/verify-reset-otp`
+```
+🔍 Masukin otp dari email
+```
+
 **Header:**
 ```
 Content-Type: application/json
+```
+
+**Request body:**
+```json
+{
+  "email": "grumpyayeee@gmail.com",
+  "otp": "59190" 
+}
 ```
 
 **Response sukses:**
@@ -230,11 +253,22 @@ Content-Type: application/json
 ```
 
 
-### 🔍 reset password POST `/verify-reset-otp`
+###  POST `/reset-password`
+```
+🔍 reset password
+```
 **Header:**
 ```
 Content-Type: application/json
 Accept: application/son
+```
+
+```json
+{
+  "password": "Test@123easy!",
+  "password_confirmation": "Test@123easy!"
+}
+
 ```
 
 **Response sukses:**
@@ -258,7 +292,7 @@ Accept: application/son
 ```
 
 
-## 💳 3. **Profil pelanggan**
+##  3. **Profil pelanggan**
 ### 🛍  GET `/profil`
 **Header:**
 ```
@@ -289,7 +323,7 @@ Ambil data pelanggan dari db.
 }
 ```
 
-## 💳 4. **Beli (pilih bank) Membership**
+##  4. **Membership**
 ### 🛍 POST `/membership`
 **Header:**
 ```
@@ -329,7 +363,7 @@ Beli membership.
 }
 ```
 
-### 📤  **Liat pembayaran membership**
+
 ### GET `/membership/payment`
 
 Lihat pembayaran membership
@@ -372,8 +406,11 @@ Authorization: Bearer {token}
     "message": "Token tidak ditemukan"
 }
 ```
-###  **Upload Bukti Bayar Membership**
-### 📜 GET `/api/membership/upload-bukti/{idPembayaranMembership}`
+
+### GET `/membership/upload-bukti/{idPembayaranMembership}`
+```
+Upload bukti bayar pembayaran membership
+```
 **Header:**
 ```
 Authorization: Bearer {token} 
@@ -403,54 +440,14 @@ Upload bukti bayar membership
 ```
 
 
-
-### 📄 GET `/api/membership/current`
-
-Ambil status membership pelanggan yang sedang aktif (jika ada).
-
-**Response sukses (ada membership aktif):**
-
-```json
-{
-  "error": false,
-  "data": {
-    "idMembership": 12,
-    "tanggalMulai": "2025-06-22",
-    "tanggalBerakhir": "2025-06-24",
-    "statusMembership": "Aktif",
-    "pembayaranMembership": {
-      "idpembayaranMembership": 44,
-      "bankPengirim": "BSI",
-      "jumlahTransfer": 50000,
-      "statusPembayaranMembership": "Terverifikasi",
-      "buktiTransfer": "bukti.jpg"
-    }
-  }
-}
+### GET `/membership/current`
 ```
-
-**Response jika belum ada membership aktif:**
-
-```json
-{
-  "error": false,
-  "message": "Tidak ada membership aktif.",
-  "data": null
-}
+Lihat membership aktif
 ```
-
-
-###  **Current Membership**
-### 📜 GET `/membership/current`
 **Header:**
 ```
 Authorization: Bearer {token} 
 ```
-lihat membership aktif
-
-**Request Body:**
-
-* `bukti_transfer`: file gambar (jpg, jpeg, png) *
 
 **Response Sukses:**
 ```json
@@ -668,7 +665,7 @@ Authorization: Bearer {token}
             "statusPembelianEvent": "Belum Checkout",
             "cartEventItem": [
                 {
-                    "no": 1,
+                    "idDetailPembelianEvent": 1,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
                     "jadwalEvent": "23-06-2025",
@@ -676,7 +673,7 @@ Authorization: Bearer {token}
                     "subtotalEvent": 150000
                 },
                 {
-                    "no": 2,
+                    "idDetailPembelianEvent": 2,
                     "namaEvent": "Programmer Cilik",
                     "hargaEvent": 100000,
                     "jadwalEvent": "23-06-2025",
@@ -693,7 +690,7 @@ Authorization: Bearer {token}
             "statusPembelianEvent": "Belum Checkout",
             "cartEventItem": [
                 {
-                    "no": 1,
+                    "idDetailPembelianEvent": 3,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
                     "jadwalEvent": "23-06-2025",
@@ -716,11 +713,12 @@ Authorization: Bearer {token}
 {
     "error": false,
     "cartDetail": {
-        "idPembelianEvent": 50,
-        "totalHargaEvent": 170000,
+        "idPembelianEvent": 73,
+        "totalHargaEvent": 200000,
         "statusPembelianEvent": "Belum Checkout",
-        "detailEvent": [
+        "cartEventItem": [
             {
+                "idDetailPembelianEvent": 92,
                 "idEvent": 4,
                 "namaEvent": "Programmer Cilik",
                 "hargaEvent": 100000,
@@ -728,11 +726,12 @@ Authorization: Bearer {token}
                 "subtotalEvent": 100000
             },
             {
-                "idEvent": 5,
-                "namaEvent": "Kreasi Sablon",
-                "hargaEvent": 70000,
-                "jumlahTiket": 1,
-                "subtotalEvent": 70000
+                "idDetailPembelianEvent": 93,
+                "idEvent": 1,
+                "namaEvent": "3D Digital Printing",
+                "hargaEvent": 50000,
+                "jumlahTiket": 2,
+                "subtotalEvent": 100000
             }
         ]
     }
@@ -782,16 +781,19 @@ Content-Type: application/json
     "error": false,
     "message": "Checkout berhasil",
     "pembelianEventResponse": {
-        "idPembelianEvent": 51,
-        "totalEvent": 70000,
+        "idPembelianEvent": 73,
+        "totalHargaEvent": 200000,
         "statusPembelianEvent": "Belum bayar",
-        "tanggalPembelianEvent": "2025-06-22T12:41:30.395491Z",
+        "tanggalPembelianEvent": "2025-06-23T06:28:51.453992Z",
         "detailEvent": [
             {
-                "idDetailPembelianEvent": 68,
-                "namaEvent": "Kreasi Sablon",
-                "jumlahTiket": 1
-            }
+                "idDetailPembelianEvent": 92,
+                "namaEvent": "Programmer Cilik",
+                "jumlahTiket": 1,
+                "harga_event": 100000,
+                "subtotal_event": 100000
+            },
+            .....
         ]
     }
 }
@@ -827,10 +829,11 @@ Content-Type: application/json
     "error": false,
     "message": "Bank berhasil dipilih. Silakan lakukan transfer manual.",
     "dataPembayaranEvent": {
-        "idPembayaranEvent": 25,
+        "idPembayaranEvent": 33,
+        "idPembelianEvent": 72,
         "statusPembayaranEvent": "Menunggu Pembayaran",
-        "bankPengirim": "BCA",
-        "totalHargaEvent": 70000
+        "bankPengirim": "DANA",
+        "totalHargaEvent": 200000
     }
 }
 ```
@@ -860,22 +863,24 @@ Authorization: Bearer {token}
 {
     "error": false,
     "detailBayarEvent": {
-        "idPembayaranEvent": 25,
-        "idPembelianEvent": 50,
-        "totalHargaEvent": 70000,
-        "tanggalBayarEvent": null,
+        "idPembayaranEvent": 33,
+        "idPembelianEvent": 72,
+        "totalHargaEvent": 200000,
+        "tanggalBayarEvent": "tergantung, kalo udh bayar muncul kalo nga null",
         "statusPembayaranEvent": "Menunggu Pembayaran",
-        "bankEvent": "BCA",
+        "bankEvent": "DANA",
         "detailEvent": [
             {
                 "namaEvent": "Programmer Cilik",
                 "jumlahTiket": 1,
-                "hargaEvent": 100000
+                "hargaEvent": 100000,
+                "subtotalEvent": 100000
             },
             {
-                "namaEvent": "Kreasi Sablon",
-                "jumlahTiket": 1,
-                "hargaEvent": 70000
+                "namaEvent": "3D Digital Printing",
+                "jumlahTiket": 2,
+                "hargaEvent": 50000,
+                "subtotalEvent": 100000
             }
         ]
     }
@@ -926,23 +931,25 @@ Authorization: Bearer {token}
 {
     "error": false,
     "notaPembelianEvent": {
-        "noPembelianEvent": 51,
-        "tanggalPembelianEvent": "2025-06-22 19:41:30",
-        "namaPelanggan": "zhenya",
+        "idPembelianEvent": 72,
+        "idPembayaranEvent": 33,
+        "tanggalPembelianEvent": "2025-06-23 13:30:24",
+        "namaPelanggan": "grumpyayee",
         "teleponPelanggan": "081234567890",
-        "emailPelanggan": "krumpyayee@gmail.com",
-        "totalPembelianEvent": 70000,
+        "emailPelanggan": "grumpyayeee@gmail.com",
+        "totalPembelianEvent": 200000,
         "statusPembelianEvent": "Belum bayar",
-        "statusPembayaranEvent": "Menunggu Verifikasi",
+        "statusPembayaranEvent": "Menunggu Pembayaran",
         "detailEvent": [
             {
                 "no": 1,
-                "namaEvent": "Kreasi Sablon",
-                "hargaEvent": 70000,
-                "jadwalEvent": "22-06-2025",
+                "namaEvent": "Programmer Cilik",
+                "hargaEvent": 100000,
+                "jadwalEvent": "23-06-2025",
                 "jumlahTiket": 1,
-                "subtotalEvent": 70000
-            }
+                "subtotalEvent": 100000
+            },
+            ......
         ]
     }
 }
