@@ -915,7 +915,37 @@ Content-Type: multipart/form-data
 }
 ```
 
-### GET `/event/nota/{idPembelianEvent}`
+### GET `/nota-event`
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+**Response success:**
+```json
+{
+    "error": false,
+    "listNotaPembelianEvent": [
+        {
+            "idPembelianEvent": 94,
+            "tanggalPembelianEvent": "2025-06-23 20:53:01",
+            "totalPembelianEvent": 100000,
+            "statusPembelianEvent": "Belum bayar",
+            "statusPembayaranEvent": "Menunggu Verifikasi"
+        },
+        {
+            "idPembelianEvent": 90,
+            "tanggalPembelianEvent": "2025-06-23 16:49:54",
+            "totalPembelianEvent": 150000,
+            "statusPembelianEvent": "Berhasil",
+            "statusPembayaranEvent": "Berhasil"
+        }
+    ]
+}
+```
+
+
+### GET `/nota-event/{idPembelianEvent}`
 
 **Header:**
 ```
