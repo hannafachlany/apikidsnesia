@@ -506,6 +506,7 @@ Melihat list Event
     "status": "sukses"
 }
 ```
+
 ### GET `/event/{idEvent}`
 Melihat 1 Event 
 **Response Sukses:**
@@ -540,6 +541,7 @@ Melihat 1 Event
     "status": "gagal"
 }
 ```
+
 ### GET `/event/detail-event`
 
 Lihat foto kegiatan event
@@ -560,6 +562,7 @@ Lihat foto kegiatan event
     ]
 }
 ```
+
 ### GET `/event/detail-event/{idEvent}`
 
 Lihat 1 Foto Kegiatan event
@@ -586,6 +589,7 @@ Lihat 1 Foto Kegiatan event
     "fotoKegiatan": []
 }
 ```
+
 ### POST `/event/cart`
 
 Membeli event (masuk ke cart)
@@ -612,29 +616,27 @@ Content-Type: application/json
 
 ```
 
-**Response sukse:**
+**Response sukses:**
 ```json
 {
     "error": false,
     "message": "Cart berhasil dibuat",
-    "idPembelianEvent": 48,
-    "totalHargaEvent": 170000,
-    "cartEventItem": [
-        {
-            "idEvent": 4,
-            "namaEvent": "Programmer Cilik",
-            "hargaEvent": 100000,
-            "jumlahTiket": 1,
-            "subtotalEvent": 100000
-        },
-        {
-            "idEvent": 5,
-            "namaEvent": "Kreasi Sablon",
-            "hargaEvent": 70000,
-            "jumlahTiket": 1,
-            "subtotalEvent": 70000
-        }
-    ]
+    "pembelianEventResponse": {
+        "idPembelianEvent": 89,
+        "tanggalPembelianEvent": null,
+        "totalHargaEvent": 150000,
+        "statusPembelianEvent": "Belum Checkout",
+        "cartEventItem": [
+            {
+                "idDetailPembelianEvent": 110,
+                "idEvent": 1,
+                "namaEvent": "3D Digital Printing",
+                "hargaEvent": 50000,
+                "jumlahTiket": 3,
+                "subtotalEvent": 150000
+            }
+        ]
+    }
 }
 ```
 
@@ -645,6 +647,7 @@ Content-Type: application/json
     "message": "Format itemsEvent tidak valid. Harus array."
 }
 ```
+
 ### GET `/event/cart/listcart`
 **Header:**
 
@@ -657,51 +660,45 @@ Authorization: Bearer {token}
 ```json
 {
     "error": false,
-    "listCart": [
+    "listEventCart": [
         {
-            "idPembelianEvent": 70,
-            "totalPembelianEvent": 250000,
-            "tanggalPembelianEvent": null,
-            "statusPembelianEvent": "Belum Checkout",
-            "cartEventItem": [
-                {
-                    "idDetailPembelianEvent": 1,
-                    "namaEvent": "3D Digital Printing",
-                    "hargaEvent": 50000,
-                    "jadwalEvent": "23-06-2025",
-                    "jumlahTiket": 3,
-                    "subtotalEvent": 150000
-                },
-                {
-                    "idDetailPembelianEvent": 2,
-                    "namaEvent": "Programmer Cilik",
-                    "hargaEvent": 100000,
-                    "jadwalEvent": "23-06-2025",
-                    "jumlahTiket": 1,
-                    "subtotalEvent": 100000
-                },
-                ......
-            ]
-        },
-        {
-            "idPembelianEvent": 71,
+            "idPembelianEvent": 86,
             "totalPembelianEvent": 150000,
             "tanggalPembelianEvent": null,
             "statusPembelianEvent": "Belum Checkout",
             "cartEventItem": [
                 {
-                    "idDetailPembelianEvent": 3,
+                    "idDetailPembelianEvent": 107,
+                    "idEvent": 1,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
                     "jadwalEvent": "23-06-2025",
                     "jumlahTiket": 3,
                     "subtotalEvent": 150000
-                }
+                },....
             ]
-        }
+        },
+        {
+            "idPembelianEvent": 87,
+            "totalPembelianEvent": 150000,
+            "tanggalPembelianEvent": null,
+            "statusPembelianEvent": "Belum Checkout",
+            "cartEventItem": [
+                {
+                    "idDetailPembelianEvent": 108,
+                    "idEvent": 1,
+                    "namaEvent": "3D Digital Printing",
+                    "hargaEvent": 50000,
+                    "jadwalEvent": "23-06-2025",
+                    "jumlahTiket": 3,
+                    "subtotalEvent": 150000
+                },....
+            ]
+        },....
     ]
 }
 ```
+
 ### GET `/event/cart/{idPembelianEvent}`
 Lihat detail pembelian di cart
 **Header:**
@@ -712,26 +709,20 @@ Authorization: Bearer {token}
 ```json
 {
     "error": false,
-    "cartDetail": {
-        "idPembelianEvent": 73,
-        "totalHargaEvent": 200000,
+    "cartEventDetail": {
+        "idPembelianEvent": 85,
+        "tanggalPembelianEvent": null,
+        "totalHargaEvent": 150000,
         "statusPembelianEvent": "Belum Checkout",
         "cartEventItem": [
             {
-                "idDetailPembelianEvent": 92,
-                "idEvent": 4,
-                "namaEvent": "Programmer Cilik",
-                "hargaEvent": 100000,
-                "jumlahTiket": 1,
-                "subtotalEvent": 100000
-            },
-            {
-                "idDetailPembelianEvent": 93,
+                "idDetailPembelianEvent": 106,
                 "idEvent": 1,
                 "namaEvent": "3D Digital Printing",
                 "hargaEvent": 50000,
-                "jumlahTiket": 2,
-                "subtotalEvent": 100000
+                "jadwalEvent": "2025-07-10",
+                "jumlahTiket": 3,
+                "subtotalEvent": 150000
             }
         ]
     }
@@ -744,6 +735,7 @@ Authorization: Bearer {token}
     "message": "Cart tidak ditemukan atau kosong."
 }
 ```
+
 ### DELETE `/event/cart/{idPembelianEvent}`
 Delete salah satu pembelian
 
@@ -765,6 +757,7 @@ Authorization: Bearer {token}
     "message": "Cart tidak ditemukan atau sudah checkout."
 }
 ```
+
 ### POST `/event/checkout/{idPembelianEvent}`
 
 Checkout salah satu pembelian
@@ -781,19 +774,20 @@ Content-Type: application/json
     "error": false,
     "message": "Checkout berhasil",
     "pembelianEventResponse": {
-        "idPembelianEvent": 73,
-        "totalHargaEvent": 200000,
+        "idPembelianEvent": 85,
+        "totaHargalEvent": 150000,
         "statusPembelianEvent": "Belum bayar",
-        "tanggalPembelianEvent": "2025-06-23T06:28:51.453992Z",
-        "detailEvent": [
+        "tanggalPembelianEvent": "2025-06-23T09:29:57.486738Z",
+        "cartEventItem": [
             {
-                "idDetailPembelianEvent": 92,
-                "namaEvent": "Programmer Cilik",
-                "jumlahTiket": 1,
-                "harga_event": 100000,
-                "subtotal_event": 100000
-            },
-            .....
+                "idDetailPembelianEvent": 106,
+                "idEvent": 1,
+                "namaEvent": "3D Digital Printing",
+                "jumlahTiket": 3,
+                "jadwalEvent": "2025-07-10",
+                "hargaEvent": 50000,
+                "subtotalEvent": 150000
+            },....
         ]
     }
 }
@@ -806,6 +800,7 @@ Content-Type: application/json
     "message": "Checkout gagal: Checkout gagal: Data pembelian atau event tidak ditemukan."
 }
 ```
+
 ### POST `/event/pembayaran/pilih-bank`
 
 Memilih bank untuk pembayaran tiket event. Pembelian yang dibayar adalah pembelian yang dibuat paling lama
@@ -829,11 +824,11 @@ Content-Type: application/json
     "error": false,
     "message": "Bank berhasil dipilih. Silakan lakukan transfer manual.",
     "dataPembayaranEvent": {
-        "idPembayaranEvent": 33,
-        "idPembelianEvent": 72,
+        "idPembayaranEvent": 34,
+        "idPembelianEvent": 90,
         "statusPembayaranEvent": "Menunggu Pembayaran",
-        "bankPengirim": "DANA",
-        "totalHargaEvent": 200000
+        "bankPengirim": "Mandiri",
+        "totalHargaEvent": 150000
     }
 }
 ```
@@ -850,6 +845,7 @@ Content-Type: application/json
     "message": "Token tidak ditemukan"
 }
 ```
+
 ### GET `/event/pembayaran/{idPembelianEvent}`
 
 Melihat detail pembayaran pelanggan sesuai token
@@ -863,28 +859,26 @@ Authorization: Bearer {token}
 {
     "error": false,
     "detailBayarEvent": {
-        "idPembayaranEvent": 33,
-        "idPembelianEvent": 72,
-        "totalHargaEvent": 200000,
-        "tanggalBayarEvent": "tergantung, kalo udh bayar muncul kalo nga null",
+        "idPembayaranEvent": 34,
+        "idPembelianEvent": 90,
+        "totalHargaEvent": 150000,
+        "tanggalBayarEvent": null,
         "statusPembayaranEvent": "Menunggu Pembayaran",
-        "bankEvent": "DANA",
+        "bankEvent": "Mandiri",
         "detailEvent": [
             {
-                "namaEvent": "Programmer Cilik",
-                "jumlahTiket": 1,
-                "hargaEvent": 100000,
-                "subtotalEvent": 100000
-            },
-            {
+                "idEvent": 1,
+                "idDetailPembelianEvent": 111,
                 "namaEvent": "3D Digital Printing",
-                "jumlahTiket": 2,
+                "jadwalEvent": "2025-07-10",
+                "jumlahTiket": 3,
                 "hargaEvent": 50000,
-                "subtotalEvent": 100000
+                "subtotalEvent": 150000
             }
         ]
     }
 }
+
 ```
 **Response error 404:**
 ```json
@@ -893,6 +887,7 @@ Authorization: Bearer {token}
     "message": "Data pembelian tidak ditemukan atau bukan milik Anda"
 }
 ```
+
 ### POST `/event/pembayaran/{idPembayaranEvent}/upload-bukti`
 
 Upload bukti bayar event
@@ -910,7 +905,7 @@ Content-Type: multipart/form-data
 {
     "error": false,
     "message": "Bukti pembayaran berhasil diupload.",
-    "urlBuktiBayarEvent": "http://localhost:8000/storage/bukti-event/buktiBayar_event685809371e2ed.jpg"
+    "urlBuktiBayarEvent": "path_to_file"
 }
 ```
 **Response error 401:**
@@ -919,6 +914,7 @@ Content-Type: multipart/form-data
     "message": "Token tidak valid atau kedaluwarsa"
 }
 ```
+
 ### GET `/event/nota/{idPembelianEvent}`
 
 **Header:**
@@ -931,25 +927,25 @@ Authorization: Bearer {token}
 {
     "error": false,
     "notaPembelianEvent": {
-        "idPembelianEvent": 72,
-        "idPembayaranEvent": 33,
-        "tanggalPembelianEvent": "2025-06-23 13:30:24",
+        "idPembelianEvent": 90,
+        "idPembayaranEvent": 34,
+        "tanggalPembelianEvent": "2025-06-23 16:49:54",
         "namaPelanggan": "grumpyayee",
         "teleponPelanggan": "081234567890",
         "emailPelanggan": "grumpyayeee@gmail.com",
-        "totalPembelianEvent": 200000,
+        "totalPembelianEvent": 150000,
         "statusPembelianEvent": "Belum bayar",
         "statusPembayaranEvent": "Menunggu Pembayaran",
         "detailEvent": [
             {
-                "no": 1,
-                "namaEvent": "Programmer Cilik",
-                "hargaEvent": 100000,
+                "idDetailPembelianEvent": 111,
+                "idEvent": 1,
+                "namaEvent": "3D Digital Printing",
+                "hargaEvent": 50000,
                 "jadwalEvent": "23-06-2025",
-                "jumlahTiket": 1,
-                "subtotalEvent": 100000
-            },
-            ......
+                "jumlahTiket": 3,
+                "subtotalEvent": 150000
+            }
         ]
     }
 }
@@ -1010,5 +1006,37 @@ Melihat 1 merch
 {
     "error": true,
     "message": "Merchandise tidak ditemukan"
+}
+```
+### POST `/merch/cart`
+```
+Masukin narang yg ingin dibei ke cart
+```
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "message": "Cart berhasil dibuat",
+    "idPembelianMerch": 33,
+    "totalHargaMerch": 80000,
+    "cartMerchItem": [
+        {
+            "idDetailPembelianMerch": 44,
+            "idMerch": 2,
+            "namaMerch": "Cap Biru",
+            "jumlahMerch": 3,
+            "hargaMerch": 20000,
+            "subtotalMerch": 60000
+        },
+        {
+            "idDetailPembelianMerch": 45,
+            "idMerch": 2,
+            "namaMerch": "Cap Biru",
+            "jumlahMerch": 1,
+            "hargaMerch": 20000,
+            "subtotalMerch": 20000
+        }
+    ]
 }
 ```
