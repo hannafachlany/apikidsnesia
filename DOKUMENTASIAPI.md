@@ -662,16 +662,45 @@ Authorization: Bearer {token}
     "error": false,
     "listCart": [
         {
-            "idPembelianEvent": 50,
-            "totalPembelianEvent": 170000,
+            "idPembelianEvent": 70,
+            "totalPembelianEvent": 250000,
             "tanggalPembelianEvent": null,
-            "statusPembelianEvent": "Belum Checkout"
+            "statusPembelianEvent": "Belum Checkout",
+            "cartEventItem": [
+                {
+                    "no": 1,
+                    "namaEvent": "3D Digital Printing",
+                    "hargaEvent": 50000,
+                    "jadwalEvent": "23-06-2025",
+                    "jumlahTiket": 3,
+                    "subtotalEvent": 150000
+                },
+                {
+                    "no": 2,
+                    "namaEvent": "Programmer Cilik",
+                    "hargaEvent": 100000,
+                    "jadwalEvent": "23-06-2025",
+                    "jumlahTiket": 1,
+                    "subtotalEvent": 100000
+                },
+                ......
+            ]
         },
         {
-            "idPembelianEvent": 51,
-            "totalPembelianEvent": 70000,
+            "idPembelianEvent": 71,
+            "totalPembelianEvent": 150000,
             "tanggalPembelianEvent": null,
-            "statusPembelianEvent": "Belum Checkout"
+            "statusPembelianEvent": "Belum Checkout",
+            "cartEventItem": [
+                {
+                    "no": 1,
+                    "namaEvent": "3D Digital Printing",
+                    "hargaEvent": 50000,
+                    "jadwalEvent": "23-06-2025",
+                    "jumlahTiket": 3,
+                    "subtotalEvent": 150000
+                }
+            ]
         }
     ]
 }
