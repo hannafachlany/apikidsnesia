@@ -766,6 +766,7 @@ Checkout salah satu pembelian
 ```
 Authorization: Bearer {token} 
 Content-Type: application/json
+Accept : application/json
 ```
 
 **Response sukses:**
@@ -898,7 +899,7 @@ Authorization: Bearer {token}
 Content-Type: multipart/form-data
 ```
 **Request Body:**
-* `bukti_transfer`: file gambar (jpg, jpeg, png)
+* `buktiBayarEvent`: file gambar (jpg, jpeg, png)
 
 **Response success:**
 ```json
@@ -1012,6 +1013,7 @@ Melihat list merch
     "status": "sukses"
 }
 ```
+
 ### GET `/merch/{idMerch}`
 
 Melihat 1 merch
@@ -1038,9 +1040,26 @@ Melihat 1 merch
     "message": "Merchandise tidak ditemukan"
 }
 ```
+
 ### POST `/merch/cart`
+**Header**
 ```
-Masukin narang yg ingin dibei ke cart
+Authorization: Bearer {token} 
+Content-type: application/json
+```
+
+Masukin merch yg ingin dibeli ke cart
+
+**Request Body:**
+```json
+{
+  "itemsMerch": [
+     {
+      "idMerch": 1,
+      "jumlah": 2
+    },....
+  ]
+}
 ```
 
 **Response sukses:**
@@ -1048,25 +1067,351 @@ Masukin narang yg ingin dibei ke cart
 {
     "error": false,
     "message": "Cart berhasil dibuat",
-    "idPembelianMerch": 33,
-    "totalHargaMerch": 80000,
-    "cartMerchItem": [
+    "pembelianMerchResponse": {
+        "idPembelianMerch": 43,
+        "tanggalPembelianMerch": null,
+        "totalHargaMerch": 40000,
+        "statusPembelianMerch": "Cart",
+        "cartMerchItem": [
+            {
+                "idDetailPembelianMerch": 56,
+                "idMerch": 1,
+                "namaMerch": "Cap Pink",
+                "jumlahMerch": 2,
+                "hargaMerch": 20000,
+                "subtotalMerch": 40000
+            },....
+        ]
+    }
+}
+```
+
+**Respon error 422:**
+```json
+{
+    "error": true,
+    "message": "Gagal membuat cart: format request itemsMerch harus array"
+}
+```
+
+### GET `/merch/cart/listcart`
+**Header**
+```
+Authorization: Bearer {token} 
+```
+
+liat isi cart merch
+
+**Respon sukses**:
+```json
+{
+    "error": false,
+    "listCartMerch": [
         {
-            "idDetailPembelianMerch": 44,
-            "idMerch": 2,
-            "namaMerch": "Cap Biru",
-            "jumlahMerch": 3,
-            "hargaMerch": 20000,
-            "subtotalMerch": 60000
+            "idPembelianMerch": 45,
+            "tanggalPembelianMerch": null,
+            "totalHargaMerch": 40000,
+            "statusPembelianMerch": "Cart",
+            "cartMerchItem": [
+                {
+                    "idDetailPembelianMerch": 58,
+                    "idMerch": 2,
+                    "namaMerch": "Cap Biru",
+                    "jumlahMerch": 2,
+                    "hargaMerch": 20000,
+                    "subtotalMerch": 40000
+                }
+            ]
         },
         {
-            "idDetailPembelianMerch": 45,
-            "idMerch": 2,
-            "namaMerch": "Cap Biru",
-            "jumlahMerch": 1,
-            "hargaMerch": 20000,
-            "subtotalMerch": 20000
+            "idPembelianMerch": 46,
+            "tanggalPembelianMerch": null,
+            "totalHargaMerch": 40000,
+            "statusPembelianMerch": "Cart",
+            "cartMerchItem": [
+                {
+                    "idDetailPembelianMerch": 59,
+                    "idMerch": 2,
+                    "namaMerch": "Cap Biru",
+                    "jumlahMerch": 2,
+                    "hargaMerch": 20000,
+                    "subtotalMerch": 40000
+                }
+            ]
         }
     ]
+}
+```
+
+### GET `/merch/cart/{idPembelianMerch}`
+
+Liat isi detail cart merch
+
+**Header**
+```
+Authorization: Bearer {token} 
+```
+
+
+**Respon sukses:**
+```json
+{
+    "error": false,
+    "itemMerchCart": {
+        "idPembelianMerch": 35,
+        "tanggalPembelianMerch": null,
+        "totalHargaMerch": 2020000,
+        "statusPembelianMerch": "Cart",
+        "cartMerchItem": [
+            {
+                "idDetailPembelianMerch": 48,
+                "idMerch": 1,
+                "namaMerch": "Cap Pink",
+                "jumlahMerch": 100,
+                "hargaMerch": 20000,
+                "subtotalMerch": 2000000
+            },
+            {
+                "idDetailPembelianMerch": 49,
+                "idMerch": 2,
+                "namaMerch": "Cap Biru",
+                "jumlahMerch": 1,
+                "hargaMerch": 20000,
+                "subtotalMerch": 20000.00
+            }
+        ]
+    }
+}
+```
+
+**Respon error 404:**
+```json
+{
+    "error": true,
+    "message": "Detail pembelian tidak ditemukan atau bukan punya anda"
+}
+```
+
+
+
+### POST `/merch/checkout/{idPembelianMerch}`
+
+Checkout salah satu pembelian merch
+
+**Header**
+```
+Authorization: Bearer {token} 
+Content-Type: application/json
+Accept: application/json
+```
+
+**Respon Sukses**
+```json
+{
+    "error": false,
+    "message": "Checkout berhasil",
+    "pembelianMerchResponse": {
+        "idPembelianMerch": 35,
+        "tanggalPembelianMerch": "2025-06-23T09:28:21.241789Z",
+        "totalHargaMerch": 40000,
+        "statusPembelianMerch": "Belum Bayar",
+        "cartMerchItem": [
+            {
+                "idDetailPembelianMerch": 48,
+                "idMerch": 1,
+                "namaMerch": "Cap Pink",
+                "jumlahMerch": 2,
+                "hargaMerch": 20000,
+                "subtotalMerch": 40000
+            },....
+        ]
+    }
+}
+```
+
+**Respon error 404:**
+```json
+{
+    "error": true,
+    "message": "Data pembelian tidak ditemukan atau tidak valid."
+}
+```
+
+
+### POST `/merch/pembayaran/pilih-bank`
+
+
+Pelanggan memilih bank utk transfer
+
+**Header**
+```
+Authorization: Bearer {token} 
+Content-type: application/json
+Accept: Content-type: application/json
+```
+
+**Request body:**
+{
+  "bankPengirim": "BCA Syariah"
+}
+
+
+**Respon sukses:**
+```json
+{
+    "error": false,
+    "message": "Bank berhasil dipilih. Silakan transfer manual.",
+    "dataPembayaranMerch": {
+        "idPembayaranMerch": 15,
+        "idPembelianMerch": 44,
+        "statusPembayaranMerch": "Menunggu Pembayaran",
+        "bankPengirim": "BCA Syariah",
+        "totalHargaMerch": 40000
+    }
+}
+```
+**Respon error 404:**
+```json
+{
+    "error": true,
+    "message": "Tidak ada pembelian aktif atau pembayaran sudah dibuat."
+}
+```
+
+
+### GET `/merch/pembayaran/{idPembelianMerch}`
+
+Liat detail bayar
+
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+**Response sukses**
+```json
+{
+    "error": false,
+    "detailBayarMerch": {
+        "idPembayaranMerch": 15,
+        "idPembelianMerch": 44,
+        "totalHargaMerch": "40000.00",
+        "tanggalBayarMerch": null,
+        "statusPembayaranMerch": "Menunggu Pembayaran",
+        "bankPengirim": "BCA Syariah",
+        "detailMerch": [
+            {
+                "idMerchandise": 1,
+                "idDetailPembelianMerchandise": 57,
+                "namaMerch": "Cap Pink",
+                "jumlahMerch": 2,
+                "hargaMerch": 20000,
+                "subtotalMerch": 40000
+            }
+        ]
+    }
+}
+```
+
+### POST `merch/pembayaran/{idPembayaranMerch}/upload-bukti`
+
+Upload bukti transfer merchandise
+
+**Header:**
+```
+Authorization: Bearer {token} 
+Content-Type: multipart/form-data
+```
+
+**Request Body:**
+* `buktiBayarMerch`: file gambar (jpg, jpeg, png)
+
+**Respon sukses:**
+```json
+{
+    "error": false,
+    "message": "Bukti pembayaran berhasil diupload.",
+    "urlBuktiBayarMerch": "http://localhost:8000/storage/bukti-merch/buktiBayar_merch_68592d377f7d4.jpg"
+}
+```
+
+
+### GET `/merch/nota-merch`
+
+lihat list nota pembelian merch
+
+**Header:**
+```
+Authorization: Bearer {token} 
+
+```
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "listNotaPembelianMerch": [
+        {
+            "idPembelianMerch": 46,
+            "tanggalPembelianMerch": "2025-06-24 12:49:12",
+            "totalPembelianMerch": 180000,
+            "statusPembelianMerch": "Belum Bayar",
+            "statusPembayaranMerch": "Menunggu Pembayaran"
+        },
+        {
+            "idPembelianMerch": 45,
+            "tanggalPembelianMerch": "2025-06-24 12:48:04",
+            "totalPembelianMerch": 90000,
+            "statusPembelianMerch": "Belum Bayar",
+            "statusPembayaranMerch": "Menunggu Pembayaran"
+        }
+    ]
+}
+```
+
+
+
+### GET `/merch/nota-merch/{idPembelianMerch}`
+
+lihat detail nota
+
+**Header:**
+```
+Authorization: Bearer {token} 
+
+```
+**Respon sukses**
+```json
+{
+    "error": false,
+    "notaPembelianMerch": {
+        "idPembelianMerch": 45,
+        "idPembayaranMerch": 16,
+        "tanggalPembelianMerch": "2025-06-24 12:48:04",
+        "namaPelanggan": "grumpyayee",
+        "teleponPelanggan": "081234567890",
+        "emailPelanggan": "grumpyayeee@gmail.com",
+        "totalPembelianMerch": 90000,
+        "statusPembelianMerch": "Belum Bayar",
+        "statusPembayaranMerch": "Menunggu Pembayaran",
+        "detailMerch": [
+            {
+                "idDetailPembelianMerch": 45,
+                "idMerch": 2,
+                "namaMerch": "Cap Kidsnesia - Biru",
+                "hargaMerch": 20000,
+                "jumlahMerch": 2,
+                "subtotalMerch": 90000
+            }
+        ]
+    }
+}
+```
+
+**Respon error 404:**
+```json
+{
+    "error": true,
+    "message": "Nota tidak ditemukan"
 }
 ```
