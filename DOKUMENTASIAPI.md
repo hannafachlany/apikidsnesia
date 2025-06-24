@@ -1467,7 +1467,7 @@ Melihat detail video
 {
     "error": false,
     "message": "Detail video berhasil diambil.",
-    "data": {
+    "detailVideo": {
         "idVideo": 6,
         "judulVideo": "Belajar Adab & Akhlak - Keutamaan Saling Memberi Hadiah",
         "deskripsiVideo": "Memberi hadiah kepada saudara bukan sekadar tradisi, melainkan.....",
