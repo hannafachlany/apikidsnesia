@@ -1418,4 +1418,60 @@ Authorization: Bearer {token}
 ```
 
 
+## 7. **Merchandise**
+### GET `/videos`
+**Header:**
+```
+Authorization: Bearer {token} 
+```
 
+Melihat list video
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "message": "List video berhasil diambil.",
+    "data": [
+        {
+            "idVideo": 4,
+            "judulVideo": "Belajar Sambil Bermain Mengenal Keunikan Budaya Indonesia Kepada Anak, Wisata Edukasi Kidsnesia",
+            "deskripsiVideo": "Menjelajahi Keindahan dan Keberagaman Budaya Nusantara Melalui......",
+            "filePath": "http://localhost:8000/storage/XbdIvD7KmE6l3d3jbknF4yIBOtNpcuzmIr6nKnz2.mp4"
+        },
+        {
+            "idVideo": 6,
+            "judulVideo": "Belajar Adab & Akhlak - Keutamaan Saling Memberi Hadiah",
+            "deskripsiVideo": "Memberi hadiah kepada saudara bukan sekadar tradisi, melainkan cara untuk mempererat hubungan dan menunjukkan.........",
+            "filePath": "http://localhost:8000/storage/XFLjWfLPTWFjHuxKEjh6e42cblER5lwBRgoe9aMY.mp4"
+        },
+        {
+            "idVideo": 7,
+            "judulVideo": "Belajar Sambil Bermain Tentang Adab dan Akhlak Anak Indonesia",
+            "deskripsiVideo": "Kidsnesia adalah destinasi wisata edukasi yang dirancang.....",
+            "filePath": "http://localhost:8000/storage/RDZymGJXOUVwLtyAjkbEc4WRBuDYu6MNNcBcQmNM.mp4"
+        }
+    ]
+}
+```
+### GET `/videos`
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+Melihat detail video
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "message": "Detail video berhasil diambil.",
+    "data": {
+        "idVideo": 6,
+        "judulVideo": "Belajar Adab & Akhlak - Keutamaan Saling Memberi Hadiah",
+        "deskripsiVideo": "Memberi hadiah kepada saudara bukan sekadar tradisi, melainkan.....",
+        "filePath": "http://localhost:8000/storage/XFLjWfLPTWFjHuxKEjh6e42cblER5lwBRgoe9aMY.mp4"
+    }
+}
+```
