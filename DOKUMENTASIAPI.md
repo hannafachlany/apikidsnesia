@@ -1454,7 +1454,7 @@ Melihat list video
     ]
 }
 ```
-### GET `/videos`
+### GET `/videos/{idVideo}`
 **Header:**
 ```
 Authorization: Bearer {token} 
