@@ -1418,7 +1418,7 @@ Authorization: Bearer {token}
 ```
 
 
-## 7. **Merchandise**
+## 7. **Video**
 ### GET `/videos`
 **Header:**
 ```
