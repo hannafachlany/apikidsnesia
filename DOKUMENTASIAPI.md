@@ -345,8 +345,9 @@ Beli membership.
     "error": false,
     "message": "Pembelian membership berhasil dicatat. Silakan transfer ke rekening berikut.",
     "data": {
-        "idMembership": 17,
-        "tanggalPembelian": "2025-06-22 16:13:04",
+        "idMembership": 24,
+        "idPembayaranMembership": 24,
+        "tanggalPembelian": "2025-06-24 20:31:20",
         "namaBankTujuan": "BSI",
         "noRekeningTujuan": "7123456789",
         "atasNama": "PT KIDSNESIA EDUPARK KREASI",
