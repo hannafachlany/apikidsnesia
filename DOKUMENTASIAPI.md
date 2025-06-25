@@ -672,6 +672,7 @@ Authorization: Bearer {token}
             "cartEventItem": [
                 {
                     "idDetailPembelianEvent": 107,
+                    "fotoEvent": "path_to_file",
                     "idEvent": 1,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
@@ -690,6 +691,7 @@ Authorization: Bearer {token}
             "cartEventItem": [
                 {
                     "idDetailPembelianEvent": 108,
+                    "fotoEvent": "path_to_file",
                     "idEvent": 1,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
@@ -722,6 +724,7 @@ Authorization: Bearer {token}
         "cartEventItem": [
             {
                 "idDetailPembelianEvent": 106,
+                "fotoEvent": "path_to_file",
                 "idEvent": 1,
                 "namaEvent": "3D Digital Printing",
                 "hargaEvent": 50000,
@@ -1124,6 +1127,7 @@ liat isi cart merch
             "cartMerchItem": [
                 {
                     "idDetailPembelianMerch": 58,
+                    "fotoMerchandise": "path_to_file",
                     "idMerch": 2,
                     "namaMerch": "Cap Biru",
                     "jumlahMerch": 2,
@@ -1140,6 +1144,7 @@ liat isi cart merch
             "cartMerchItem": [
                 {
                     "idDetailPembelianMerch": 59,
+                    "fotoMerchandise": "path_to_file",
                     "idMerch": 2,
                     "namaMerch": "Cap Biru",
                     "jumlahMerch": 2,
@@ -1174,6 +1179,7 @@ Authorization: Bearer {token}
         "cartMerchItem": [
             {
                 "idDetailPembelianMerch": 48,
+                "fotoMerchandise": "path_to_file",
                 "idMerch": 1,
                 "namaMerch": "Cap Pink",
                 "jumlahMerch": 100,
@@ -1182,6 +1188,7 @@ Authorization: Bearer {token}
             },
             {
                 "idDetailPembelianMerch": 49,
+                "fotoMerchandise": "path_to_file",
                 "idMerch": 2,
                 "namaMerch": "Cap Biru",
                 "jumlahMerch": 1,
