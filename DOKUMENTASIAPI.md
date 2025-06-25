@@ -729,7 +729,7 @@ Authorization: Bearer {token}
                 "jadwalEvent": "09:00",
                 "jumlahTiket": 3,
                 "subtotalEvent": 150000
-            }
+            },....
         ]
     }
 }
