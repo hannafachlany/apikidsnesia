@@ -830,6 +830,89 @@ Accept : application/json
 }
 ```
 
+### GET `/event/checkout/nota`
+
+liat list nota yg statusPembayaranEvent ny masih null di DB, dan "Belum memilih bank" di response
+
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+**Request body:**
+```json
+{
+    "error": false,
+    "listNotaBelumPilihBank": [
+        {
+            "idPembelianEvent": 112,
+            "statusPembelianEvent": "Belum bayar",
+            "tanggalPembelianEvent": "2025-06-25 23:44:24",
+            "totalPembelianEvent": 890000,
+            "statusPembayaranEvent": "Belum memilih bank"
+        },
+        {
+            "idPembelianEvent": 111,
+            "statusPembelianEvent": "Belum bayar",
+            "tanggalPembelianEvent": "2025-06-25 23:36:39",
+            "totalPembelianEvent": 190000,
+            "statusPembayaranEvent": "Belum memilih bank"
+        }
+    ]
+}
+```
+
+
+### GET `/event/checkout/nota/{idPembelianEvent}`
+
+liat detail nota yg statusPembayaranEvent ny masih null di DB, dan "Belum memilih bank" di response
+
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+
+**Response sukses:**
+```json
+{
+    "error": false,
+    "notaPembelianEvent": {
+        "idPembelianEvent": 112,
+        "statusPembelianEvent": "Belum bayar",
+        "tanggalPembelianEvent": "2025-06-25 23:44:24",
+        "totalPembelianEvent": 890000,
+        "statusPembayaranEvent": "Belum memilih bank",
+        "detailEvent": [
+            {
+                "idEvent": 2,
+                "namaEvent": "Aku Cinta Indonesia",
+                "jumlahTiket": 2,
+                "hargaEvent": 70000,
+                "subtotalEvent": 140000
+            },
+            {
+                "idEvent": 3,
+                "namaEvent": "Foto Studio",
+                "jumlahTiket": 10,
+                "hargaEvent": 75000,
+                "subtotalEvent": 750000
+            }
+        ]
+    }
+}
+```
+
+**Response gagal:**
+```json
+{
+    "error": true,
+    "message": "Checkout gagal: Checkout gagal: Data pembelian atau event tidak ditemukan."
+}
+```
+
+
+
 ### POST `/event/pembayaran/pilih-bank`
 
 Memilih bank untuk pembayaran tiket event. Pembelian yang dibayar adalah pembelian yang dibuat paling lama
@@ -1300,6 +1383,9 @@ Accept: application/json
 }
 ```
 
+
+
+
 **Respon error 404:**
 ```json
 {
@@ -1308,8 +1394,78 @@ Accept: application/json
 }
 ```
 
+### GET `/merch/checkout/nota`
 
-### POST `/merch/pembayaran/pilih-bank`
+liat list nota yg statusPembayaranMerch ny masih null di DB, dan "Belum memilih bank" di response
+
+
+**Header**
+```
+Authorization: Bearer {token} 
+```
+
+**Response success:**
+```json
+{
+    "error": false,
+    "listNotaBelumPilihBankMerch": [
+        {
+            "idPembelianMerch": 75,
+            "tanggalPembelianMerch": "2025-06-25 23:51:03",
+            "totalPembelianMerch": 180000,
+            "statusPembelianMerch": "Belum Bayar",
+            "statusPembayaranMerch": "Belum memilih bank"
+        },....
+    ]
+}
+```
+
+### GET `/merch/checkout/nota/{idPembelianMerch}`
+
+liat detail nota yg statusPembayaranMerch ny masih null di DB, dan "Belum memilih bank" di response
+
+
+**Header**
+```
+Authorization: Bearer {token} 
+```
+
+**Response success:**
+```json
+{
+    "error": false,
+    "notaBelumPilihBankMerch": {
+        "idPembelianMerch": 75,
+        "tanggalPembelianMerch": "2025-06-25 23:51:03",
+        "namaPelanggan": "zhenya",
+        "teleponPelanggan": "081234567890",
+        "emailPelanggan": "krumpyayee@gmail.com",
+        "totalPembelianMerch": 180000,
+        "statusPembelianMerch": "Belum Bayar",
+        "statusPembayaranMerch": "Belum memilih bank",
+        "detailMerch": [
+            {
+                "idDetailPembelianMerch": 82,
+                "idMerch": 2,
+                "namaMerch": "Cap Kidsnesia - Biru",
+                "hargaMerch": 45000,
+                "jumlahMerch": 1,
+                "subtotalMerch": 45000
+            },
+            {
+                "idDetailPembelianMerch": 83,
+                "idMerch": 7,
+                "namaMerch": "Cap Kidsnesia - Pink",
+                "hargaMerch": 45000,
+                "jumlahMerch": 3,
+                "subtotalMerch": 135000
+            }
+        ]
+    }
+}
+```
+
+### POST `/merch/pembayaran/pilih-bank/{idPembelianMerch}`
 
 
 Pelanggan memilih bank utk transfer
