@@ -791,6 +791,7 @@ Accept : application/json
         "cartEventItem": [
             {
                 "idDetailPembelianEvent": 106,
+                "fotoEvent": "path_to_file",
                 "idEvent": 1,
                 "namaEvent": "3D Digital Printing",
                 "jumlahTiket": 3,
@@ -1234,6 +1235,7 @@ Accept: application/json
         "cartMerchItem": [
             {
                 "idDetailPembelianMerch": 48,
+                "fotoMerchandise": "path_to_file",
                 "idMerch": 1,
                 "namaMerch": "Cap Pink",
                 "jumlahMerch": 2,
