@@ -778,6 +778,23 @@ Content-Type: application/json
 Accept : application/json
 ```
 
+**Request body:**
+```json
+{
+  "itemsEvent": [
+    {
+      "idEvent": 4,
+      "jumlahTiket": 1
+    },
+    {
+      "idEvent": 5,
+      "jumlahTiket": 1
+    },.....
+  ]
+}
+
+```
+
 **Response sukses:**
 ```json
 {
@@ -924,7 +941,8 @@ Content-Type: multipart/form-data
 **Response error 401:**
 ```json
 {
-    "message": "Token tidak valid atau kedaluwarsa"
+    "error": true,
+    "message": "Data pembayaran tidak ditemukan atau bukan milik Anda."
 }
 ```
 
@@ -1245,6 +1263,18 @@ Content-Type: application/json
 Accept: application/json
 ```
 
+**Request Body:**
+```json
+{
+  "itemsMerch": [
+     {
+      "idMerch": 1,
+      "jumlah": 2
+    },....
+  ]
+}
+```
+
 **Respon Sukses**
 ```json
 {
@@ -1274,7 +1304,7 @@ Accept: application/json
 ```json
 {
     "error": true,
-    "message": "Data pembelian tidak ditemukan atau tidak valid."
+    "message": "Data pembelian tidak ditemukan atau bukan milik anda."
 }
 ```
 
