@@ -493,7 +493,8 @@ Melihat list Event
         {
             "idEvent": 1,
             "namaEvent": "3D Digital Printing",
-            "jadwalEvent": "2025-04-01",
+            "tanggalEvent": "10-07-2025",
+            "jadwalEvent": "09:00",
             "fotoEvent": "path_to_file",
             "deskripsiEvent": "Belajar membuat karakter maskot 3D sesuai dengan pilihan daerah favoritmu",
             "kuota": 7,
@@ -519,7 +520,8 @@ Melihat 1 Event
     "detailEvent": {
         "idEvent": 1,
         "namaEvent": "3D Digital Printing",
-        "jadwalEvent": "2025-04-01",
+        "tanggalEvent": "10-07-2025",
+        "jadwalEvent": "09:00",
         "fotoEvent": "path_to_file",
         "deskripsiEvent": "Belajar membuat karakter maskot 3D sesuai dengan pilihan daerah favoritmu",
         "kuota": 7,
@@ -673,7 +675,8 @@ Authorization: Bearer {token}
                     "idEvent": 1,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
-                    "jadwalEvent": "23-06-2025",
+                    "tanggalEvent": "10-07-2025",
+                    "jadwalEvent": "09:00",
                     "jumlahTiket": 3,
                     "subtotalEvent": 150000
                 },....
@@ -690,7 +693,8 @@ Authorization: Bearer {token}
                     "idEvent": 1,
                     "namaEvent": "3D Digital Printing",
                     "hargaEvent": 50000,
-                    "jadwalEvent": "23-06-2025",
+                    "tanggalEvent": "10-07-2025",
+                    "jadwalEvent": "09:00",
                     "jumlahTiket": 3,
                     "subtotalEvent": 150000
                 },....
@@ -721,7 +725,8 @@ Authorization: Bearer {token}
                 "idEvent": 1,
                 "namaEvent": "3D Digital Printing",
                 "hargaEvent": 50000,
-                "jadwalEvent": "2025-07-10",
+                "tanggalEvent": "10-07-2025",
+                "jadwalEvent": "09:00",
                 "jumlahTiket": 3,
                 "subtotalEvent": 150000
             }
@@ -786,7 +791,8 @@ Accept : application/json
                 "idEvent": 1,
                 "namaEvent": "3D Digital Printing",
                 "jumlahTiket": 3,
-                "jadwalEvent": "2025-07-10",
+                "tanggalEvent": "10-07-2025",
+                "jadwalEvent": "09:00",
                 "hargaEvent": 50000,
                 "subtotalEvent": 150000
             },....
@@ -872,7 +878,8 @@ Authorization: Bearer {token}
                 "idEvent": 1,
                 "idDetailPembelianEvent": 111,
                 "namaEvent": "3D Digital Printing",
-                "jadwalEvent": "2025-07-10",
+                "tanggalEvent": "10-07-2025",
+                "jadwalEvent": "09:00",
                 "jumlahTiket": 3,
                 "hargaEvent": 50000,
                 "subtotalEvent": 150000
@@ -974,7 +981,8 @@ Authorization: Bearer {token}
                 "idEvent": 1,
                 "namaEvent": "3D Digital Printing",
                 "hargaEvent": 50000,
-                "jadwalEvent": "23-06-2025",
+                "tanggalEvent": "10-07-2025",
+                "jadwalEvent": "09:00",
                 "jumlahTiket": 3,
                 "subtotalEvent": 150000
             }
