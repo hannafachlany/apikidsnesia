@@ -1176,7 +1176,7 @@ Authorization: Bearer {token}
         "idPembelianMerch": 35,
         "tanggalPembelianMerch": null,
         "totalHargaMerch": 2020000,
-        "statusPembelianMerch": "Cart",
+        "statusPembelianMerch": "Belum Checkout",
         "cartMerchItem": [
             {
                 "idDetailPembelianMerch": 48,
@@ -1209,7 +1209,30 @@ Authorization: Bearer {token}
 }
 ```
 
+### DELETE `/merch/cart/{idPembelianMerch}`
 
+hapus cart merch
+
+**Header**
+```
+Authorization: Bearer {token} 
+```
+
+**Response sukses**
+```json
+{
+    "error": false,
+    "message": "Cart berhasil dihapus."
+}
+```
+
+**Response error 404:**
+```json
+{
+    "error": true,
+    "message": "Data pembelian tidak ditemukan atau bukan milik anda."
+}
+```
 
 ### POST `/merch/checkout/{idPembelianMerch}`
 
