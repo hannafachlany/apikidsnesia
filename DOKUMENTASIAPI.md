@@ -913,7 +913,7 @@ Authorization: Bearer {token}
 
 
 
-### POST `/event/pembayaran/pilih-bank`
+### POST `/event/pembayaran/pilih-bank/{idPembelianEvent}`
 
 Memilih bank untuk pembayaran tiket event. Pembelian yang dibayar adalah pembelian yang dibuat paling lama
 
@@ -1703,4 +1703,4 @@ Melihat detail video
 ```
 
        
-   
+   `
