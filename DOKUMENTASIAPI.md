@@ -323,6 +323,34 @@ Ambil data pelanggan dari db.
 }
 ```
 
+### 🛍  POST `/profil/upload-foto`
+**Header:**
+```
+Authorization: Bearer {token} 
+Content-Type: multipart/form-data
+```
+
+**Request Body:**
+* `foto_profil`: file gambar (jpg, jpeg, png)
+
+**Response sukses:**
+```json
+{
+    "message": "Foto profil berhasil diunggah",
+    "status": "sukses",
+    "fotoProfil": "http://127.0.0.1:8000/storage/foto_profil/685e5eaf20a7e.jpg"
+}
+```
+
+### 🛍  DELETE `/profil/hapus-foto`
+**Header:**
+```
+Authorization: Bearer {token} 
+```
+
+**Response sukses:**
+
+
 ##  4. **Membership**
 ### 🛍 POST `/membership`
 **Header:**
@@ -1663,19 +1691,22 @@ Melihat list video
             "idVideo": 4,
             "judulVideo": "Belajar Sambil Bermain Mengenal Keunikan Budaya Indonesia Kepada Anak, Wisata Edukasi Kidsnesia",
             "deskripsiVideo": "Menjelajahi Keindahan dan Keberagaman Budaya Nusantara Melalui......",
-            "filePath": "http://localhost:8000/storage/XbdIvD7KmE6l3d3jbknF4yIBOtNpcuzmIr6nKnz2.mp4"
+            "filePath": "path_to_file",
+            "thumbnail": "path_to_file"
         },
         {
             "idVideo": 6,
             "judulVideo": "Belajar Adab & Akhlak - Keutamaan Saling Memberi Hadiah",
             "deskripsiVideo": "Memberi hadiah kepada saudara bukan sekadar tradisi, melainkan cara untuk mempererat hubungan dan menunjukkan.........",
-            "filePath": "http://localhost:8000/storage/XFLjWfLPTWFjHuxKEjh6e42cblER5lwBRgoe9aMY.mp4"
+            "filePath": "path_to_file",
+            "thumbnail": "path_to_file"
         },
         {
             "idVideo": 7,
             "judulVideo": "Belajar Sambil Bermain Tentang Adab dan Akhlak Anak Indonesia",
             "deskripsiVideo": "Kidsnesia adalah destinasi wisata edukasi yang dirancang.....",
-            "filePath": "http://localhost:8000/storage/RDZymGJXOUVwLtyAjkbEc4WRBuDYu6MNNcBcQmNM.mp4"
+            "filePath": "path_to_file",
+            "thumbnail": "path_to_file"
         }
     ]
 }
@@ -1697,7 +1728,8 @@ Melihat detail video
         "idVideo": 6,
         "judulVideo": "Belajar Adab & Akhlak - Keutamaan Saling Memberi Hadiah",
         "deskripsiVideo": "Memberi hadiah kepada saudara bukan sekadar tradisi, melainkan.....",
-        "filePath": "http://localhost:8000/storage/XFLjWfLPTWFjHuxKEjh6e42cblER5lwBRgoe9aMY.mp4"
+        "filePath": "path_to_file",
+        "thumbnail": "path_to_file"
     }
 }
 ```
