@@ -259,6 +259,7 @@ Content-Type: application/json
 ```
 **Header:**
 ```
+Authorization: Bearer {token_reset} 
 Content-Type: application/json
 Accept: application/son
 ```
@@ -436,7 +437,7 @@ Authorization: Bearer {token}
 }
 ```
 
-### GET `/membership/upload-bukti/{idPembayaranMembership}`
+### POST `/membership/upload-bukti/{idPembayaranMembership}`
 ```
 Upload bukti bayar pembayaran membership
 ```
