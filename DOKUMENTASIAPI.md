@@ -1627,7 +1627,7 @@ Authorization: Bearer {token}
 
 
 
-### GET `/merch/nota-merch/{idPembelianMerch}`
+### GET `nota-merch/{idPembelianMerch}`
 
 lihat detail nota
 
