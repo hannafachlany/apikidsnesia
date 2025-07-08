@@ -1592,7 +1592,7 @@ Content-Type: multipart/form-data
 ```
 
 
-### GET `/merch/nota-merch`
+### GET `/nota-merch`
 
 lihat list nota pembelian merch
 
@@ -1627,7 +1627,7 @@ Authorization: Bearer {token}
 
 
 
-### GET `nota-merch/{idPembelianMerch}`
+### GET `/nota-merch/{idPembelianMerch}`
 
 lihat detail nota
 
