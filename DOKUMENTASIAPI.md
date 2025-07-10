@@ -90,11 +90,20 @@ Verifikasi email pelanggan.
 }
 ```
 
-**Response gagal 422:**
+**Response otp salah:**
 
 ```json
 {
-    "message": "Token verifikasi tidak valid.",
+    "message": "Kode OTP salah.",
+    "status": "error"
+}
+```
+
+**Response otp kadaluarsa:**
+
+```json
+{
+    "message": "Kode OTP sudah kadaluarsa.",
     "status": "error"
 }
 ```
@@ -244,7 +253,7 @@ Content-Type: application/json
 }
 ```
 
-**Response error 422:**
+**Response kode otp salah:**
 ```json
 {
     "error": true,
@@ -252,7 +261,13 @@ Content-Type: application/json
 }
 ```
 
-
+**Response kode otp kadaluarsa:**
+```json
+{
+    "error": true,
+    "message": "OTP sudah kadaluarsa."
+}
+```
 ###  POST `/reset-password`
 ```
 🔍 reset password
