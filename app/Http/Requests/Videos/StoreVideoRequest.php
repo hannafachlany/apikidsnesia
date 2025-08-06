@@ -18,6 +18,7 @@ class StoreVideoRequest extends FormRequest
             'judul_video' => 'required|string|max:255',
             'deskripsi_video' => 'nullable|string',
             'file_video' => 'required|file|mimetypes:video/mp4,video/mpeg,video/quicktime|max:60000', // max 50MB, sesuaikan
+            'thumbnail' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

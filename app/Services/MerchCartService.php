@@ -6,141 +6,48 @@ use App\Models\PembelianMerch;
 use App\Models\DetailPembelianMerch;
 use App\Models\Merchandise;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class MerchCartService
 {
-    public function storeCart(Request $request)
-    {
-        $user = $request->user();
-        $items = $request->input('itemsMerch');
-        if (!is_array($items)) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Format itemsMerch tidak valid. Harus array.'
-            ], 422);
-        }
-
-        try {
-            $result = $this->createCart($user->id_pelanggan, $items);
-            return response()->json([
-                'error' => false,
-                'message' => 'Cart berhasil dibuat',
-                'pembelianMerchResponse' => $result
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Gagal membuat cart: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function listCartByUser(Request $request)
-    {
-        $user = $request->user();
-        try {
-            $result = $this->listCart($user->id_pelanggan);
-            return response()->json([
-                'error' => false,
-                'listCartMerch' => $result
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function getCartDetail($idPembelian)
-    {
-        try {
-            $result = $this->getCartDetailById($idPembelian);
-
-            if (!$result) {
-                return response()->json(['error' => true, 'message' => 'Cart tidak ditemukan'], 404);
-            }
-
-            return response()->json(['error' => false, 'cartDetail' => $result]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Gagal mengambil detail cart: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function deleteCartById($idPembelian)
-    {
-        try {
-            $deleted = $this->deleteCart($idPembelian);
-
-            if (!$deleted) {
-                return response()->json(['error' => true, 'message' => 'Cart tidak ditemukan atau sudah checkout'], 404);
-            }
-
-            return response()->json(['error' => false, 'message' => 'Cart berhasil dihapus']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => true, 'message' => 'Gagal menghapus cart: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function checkoutCart(Request $request, $idPembelian)
-    {
-        $user = $request->user();
-        $items = $request->input('itemsMerch');
-
-        if (!is_array($items)) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Format itemsMerch tidak valid. Harus array.'
-            ], 422);
-        }
-
-        try {
-            $result = $this->doCheckout($idPembelian, $user->id_pelanggan, $items);
-
-            return response()->json([
-                'error' => false,
-                'message' => 'Checkout berhasil',
-                'pembelianMerchResponse' => $result
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Checkout gagal: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // === Logic Murni ===
-
+    // 1. Membuat keranjang (cart) baru untuk pelanggan.
+    //    Melalui transaksi database agar penyimpanan header dan detail berjalan aman.
     public function createCart($idPelanggan, $items)
     {
+        if (!is_array($items)) {
+            return [
+                'error' => true,
+                'message' => 'Format itemsMerch tidak valid. Harus array.'
+            ];
+        }
+
         return DB::transaction(function () use ($idPelanggan, $items) {
             $total = 0;
-            foreach ($items as $item) {
-                $merch = Merchandise::findOrFail($item['idMerch']);
-                $total += $merch->harga_merchandise * $item['jumlah'];
-            }
 
+            // Simpan pembelian utama (belum checkout)
             $pembelian = PembelianMerch::create([
                 'id_pelanggan' => $idPelanggan,
                 'tanggal_pembelian' => null,
-                'status_pembelian' => 'Cart',
+                'status_pembelian' => 'Belum Checkout',
                 'is_checkout' => 0,
-                'total_pembelian' => $total,
+                'total_pembelian' => 0,
             ]);
 
-            $detail = [];
+            $cartMerchItem = [];
+
+            // Simpan detail item satu per satu
             foreach ($items as $item) {
                 $merch = Merchandise::findOrFail($item['idMerch']);
+
                 $jumlah = $item['jumlah'];
+
+                if ($jumlah > $merch->stok) {
+                    throw new \Exception("Jumlah pembelian untuk merchandise '{$merch->nama_merchandise}' melebihi stok ({$merch->stok}).");
+                }
+
                 $subtotal = $merch->harga_merchandise * $jumlah;
 
-                $dp = DetailPembelianMerch::create([
+                $detail = DetailPembelianMerch::create([
                     'id_pembelianMerch' => $pembelian->id_pembelianMerch,
                     'id_merchandise' => $merch->id_merchandise,
                     'jumlah' => $jumlah,
@@ -148,25 +55,31 @@ class MerchCartService
                     'subtotal' => $subtotal,
                 ]);
 
-                $detail[] = [
-                    'idDetailPembelianMerch' => $dp->id_detail_pembelianMerch,
+                $cartMerchItem[] = [
+                    'idDetailPembelianMerch' => $detail->id_detail_pembelianMerch,
+                    'idMerch' => $merch->id_merchandise,
                     'namaMerch' => $merch->nama_merchandise,
                     'jumlahMerch' => $jumlah,
                     'hargaMerch' => $merch->harga_merchandise,
                     'subtotalMerch' => $subtotal,
                 ];
+
+                $total += $subtotal;
             }
+
+            $pembelian->update(['total_pembelian' => $total]);
 
             return [
                 'idPembelianMerch' => $pembelian->id_pembelianMerch,
                 'tanggalPembelianMerch' => $pembelian->tanggal_pembelian,
-                'totalPembelianMerch' => $total,
+                'totalHargaMerch' => $total,
                 'statusPembelianMerch' => $pembelian->status_pembelian,
-                'detailMerch' => $detail,
+                'cartMerchItem' => $cartMerchItem,
             ];
         });
     }
 
+    // 2. Menampilkan semua cart yang belum di-checkout milik pelanggan.
     public function listCart($idPelanggan)
     {
         return PembelianMerch::with(['detail.merchandise'])
@@ -177,11 +90,15 @@ class MerchCartService
                 return [
                     'idPembelianMerch' => $pembelian->id_pembelianMerch,
                     'tanggalPembelianMerch' => $pembelian->tanggal_pembelian,
-                    'totalPembelianMerch' => $pembelian->total_pembelian,
+                    'totalHargaMerch' => $pembelian->total_pembelian,
                     'statusPembelianMerch' => $pembelian->status_pembelian,
-                    'detailMerch' => $pembelian->detail->map(function ($item) {
+                    'cartMerchItem' => $pembelian->detail->map(function ($item) {
                         return [
                             'idDetailPembelianMerch' => $item->id_detail_pembelianMerch,
+                            'fotoMerchandise' => $item->merchandise?->foto_merchandise 
+                                ? asset('storage/merchandise/' . $item->merchandise->foto_merchandise)
+                                : null,
+                            'idMerch' => $item->merchandise->id_merchandise,
                             'namaMerch' => $item->merchandise->nama_merchandise,
                             'jumlahMerch' => $item->jumlah,
                             'hargaMerch' => $item->harga,
@@ -192,22 +109,31 @@ class MerchCartService
             });
     }
 
-    public function getCartDetailById($idPembelian)
+    // 3. Menampilkan detail cart spesifik (jika milik user & belum checkout)
+    public function getCartDetail($idPembelian, $idPelanggan)
     {
-        $pembelian = PembelianMerch::with(['detail.merchandise'])->find($idPembelian);
+        $pembelian = PembelianMerch::with(['detail.merchandise'])
+            ->where('id_pembelianMerch', $idPembelian)
+            ->where('id_pelanggan', $idPelanggan)
+            ->where('is_checkout', 0)
+            ->first();
 
-        if (!$pembelian || $pembelian->is_checkout == 1) {
+        if (!$pembelian) {
             return null;
         }
 
         return [
             'idPembelianMerch' => $pembelian->id_pembelianMerch,
             'tanggalPembelianMerch' => $pembelian->tanggal_pembelian,
-            'totalPembelianMerch' => $pembelian->total_pembelian,
+            'totalHargaMerch' => $pembelian->total_pembelian,
             'statusPembelianMerch' => $pembelian->status_pembelian,
-            'detailMerch' => $pembelian->detail->map(function ($item) {
+            'cartMerchItem' => $pembelian->detail->map(function ($item) {
                 return [
                     'idDetailPembelianMerch' => $item->id_detail_pembelianMerch,
+                    'fotoMerchandise' => $item->merchandise?->foto_merchandise 
+                        ? asset('storage/merchandise/' . $item->merchandise->foto_merchandise)
+                        : null,
+                    'idMerch' => $item->merchandise->id_merchandise,
                     'namaMerch' => $item->merchandise->nama_merchandise,
                     'jumlahMerch' => $item->jumlah,
                     'hargaMerch' => $item->harga,
@@ -217,7 +143,8 @@ class MerchCartService
         ];
     }
 
-    public function deleteCart($idPembelian)
+    // 4. Menghapus cart (dan detailnya) jika belum di-checkout
+    public function deleteCart($idPembelian, $idPelanggan)
     {
         $pembelian = PembelianMerch::where('id_pembelianMerch', $idPembelian)
             ->where('is_checkout', 0)
@@ -231,7 +158,8 @@ class MerchCartService
         return true;
     }
 
-    public function doCheckout($idPembelian, $idPelanggan, $items)
+    // 5. Melakukan proses checkout: update status, simpan tanggal, dan kurangi stok
+    public function checkout($idPembelian, $idPelanggan, $items)
     {
         return DB::transaction(function () use ($idPembelian, $idPelanggan, $items) {
             $pembelian = PembelianMerch::where('id_pembelianMerch', $idPembelian)
@@ -244,8 +172,14 @@ class MerchCartService
             foreach ($items as $item) {
                 $merch = Merchandise::findOrFail($item['idMerch']);
                 $jumlah = $item['jumlah'];
+
+                if ($jumlah > $merch->stok) {
+                    throw new \Exception("Jumlah pembelian untuk merchandise '{$merch->nama_merchandise}' melebihi stok ({$merch->stok}).");
+                }
+
                 $subtotal = $merch->harga_merchandise * $jumlah;
 
+                // Update detail pembelian
                 DetailPembelianMerch::where('id_pembelianMerch', $idPembelian)
                     ->where('id_merchandise', $merch->id_merchandise)
                     ->update([
@@ -256,20 +190,26 @@ class MerchCartService
                 $total += $subtotal;
             }
 
-            $pembelian->total_pembelian = $total;
-            $pembelian->is_checkout = 1;
-            $pembelian->status_pembelian = 'Belum Bayar';
-            $pembelian->tanggal_pembelian = Carbon::now();
-            $pembelian->save();
+            // Update header pembelian jadi sudah checkout
+            $pembelian->update([
+                'is_checkout' => 1,
+                'status_pembelian' => 'Belum Bayar',
+                'tanggal_pembelian' => Carbon::now(),
+                'total_pembelian' => $total,
+            ]);
 
             return [
                 'idPembelianMerch' => $pembelian->id_pembelianMerch,
                 'tanggalPembelianMerch' => $pembelian->tanggal_pembelian,
-                'totalPembelianMerch' => $total,
+                'totalHargaMerch' => $total,
                 'statusPembelianMerch' => $pembelian->status_pembelian,
-                'detailMerch' => $pembelian->detail->map(function ($item) {
+                'cartMerchItem' => $pembelian->detail->map(function ($item) {
                     return [
                         'idDetailPembelianMerch' => $item->id_detail_pembelianMerch,
+                        'fotoMerchandise' => $item->merchandise?->foto_merchandise 
+                            ? asset('storage/merchandise/' . $item->merchandise->foto_merchandise)
+                            : null,
+                        'idMerch' => $item->merchandise->id_merchandise,
                         'namaMerch' => $item->merchandise->nama_merchandise,
                         'jumlahMerch' => $item->jumlah,
                         'hargaMerch' => $item->harga,

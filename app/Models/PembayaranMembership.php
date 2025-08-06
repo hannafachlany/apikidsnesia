@@ -13,6 +13,7 @@ class PembayaranMembership extends Model
 
     protected $fillable = [
         'id_membership',
+        'nama_pelanggan',
         'bank_pengirim',
         'waktu_transfer',
         'jumlah_transfer',

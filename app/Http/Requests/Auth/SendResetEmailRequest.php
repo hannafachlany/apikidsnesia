@@ -11,18 +11,21 @@ class SendResetEmailRequest extends FormRequest
      *
      * @return bool
      */
+    // 1. Izinkan semua user melakukan request
     public function authorize()
     {
         return true;
     }
 
+    // 2. Validasi email input
     public function rules()
     {
         return [
-            'email' => 'required|email|exists:pelanggan,email',
+            'email' => 'required|email',
         ];
     }
 
+    // 3. Pesan error
     public function messages()
     {
         return [
@@ -31,5 +34,6 @@ class SendResetEmailRequest extends FormRequest
             'email.exists' => 'Email tidak ditemukan.',
         ];
     }
+
     
 }

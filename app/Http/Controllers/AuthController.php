@@ -12,6 +12,7 @@ use App\Http\Requests\Auth\SendResetEmailRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
 {
@@ -19,6 +20,7 @@ class AuthController extends Controller
 
     public function __construct(AuthService $authService)
     {
+        // 1. Inisialisasi service
         $this->authService = $authService;
     }
 
@@ -26,8 +28,10 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
+            // 1. Panggil service register dengan data tervalidasi
             $result = $this->authService->register($request->validated());
 
+            // 2. Return respons sukses
             return response()->json([
                 'message' => 'Registrasi berhasil! Silakan cek email untuk kode verifikasi.',
                 'status' => 'sukses',
@@ -39,6 +43,7 @@ class AuthController extends Controller
                 ],
             ], 201);
         } catch (ValidationException $e) {
+            // 3. Tangani error validasi email/password
             $errors = $e->validator->errors();
 
             if ($errors->has('email')) {
@@ -66,23 +71,30 @@ class AuthController extends Controller
     public function verifyEmail(VerifyEmailRequest $request)
     {
         try {
+            // 1. Verifikasi OTP dan token melalui service
             $this->authService->verifyEmail($request->validated());
 
+            // 2. Return respons sukses
             return response()->json([
                 'message' => 'Verifikasi email berhasil!',
                 'status' => 'sukses',
             ]);
         } catch (\Exception $e) {
+            // 3. Tangani kesalahan verifikasi
             return response()->json([
                 'message' => $e->getMessage(),
                 'status' => 'error',
             ], 422);
         }
     }
+
+    // Fungsi kirim ulang OTP
     public function resendOtp(Request $request)
     {
-        $tokenVerifikasi = $request->bearerToken(); // ← ambil dari header Authorization
+        // 1. Ambil token dari header Authorization
+        $tokenVerifikasi = $request->bearerToken();
 
+        // 2. Validasi keberadaan token
         if (!$tokenVerifikasi) {
             return response()->json([
                 'message' => 'Token verifikasi wajib dikirim.',
@@ -91,14 +103,17 @@ class AuthController extends Controller
         }
 
         try {
+            // 3. Kirim ulang OTP via service
             $result = $this->authService->resendOtp($tokenVerifikasi);
 
+            // 4. Return response sukses
             return response()->json([
                 'message' => 'Kode OTP berhasil dikirim ulang.',
                 'status' => 'sukses',
                 'resendResult' => $result
             ]);
         } catch (\Exception $e) {
+            // 5. Tangani error
             return response()->json([
                 'message' => $e->getMessage(),
                 'status' => 'error',
@@ -106,12 +121,13 @@ class AuthController extends Controller
         }
     }
 
-
     // Fungsi login
     public function login(LoginRequest $request)
     {
+        // 1. Panggil service login dengan data tervalidasi
         $user = $this->authService->login($request->validated());
 
+        // 2. Cek jika login gagal karena user/password salah
         if ($user === null) {
             return response()->json([
                 'error' => true,
@@ -119,6 +135,7 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // 3. Cek jika email belum diverifikasi
         if ($user === 'not_verified') {
             return response()->json([
                 'error' => true,
@@ -126,6 +143,7 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // 4. Return respons sukses
         return response()->json([
             'error' => false,
             'message' => 'success',
@@ -141,14 +159,17 @@ class AuthController extends Controller
     public function sendResetEmail(SendResetEmailRequest $request)
     {
         try {
-            $otp = $this->authService->sendResetEmail($request->validated()); // 🟢 simpan hasil return service
+            // 1. Kirim OTP reset password ke email
+            $otp = $this->authService->sendResetEmail($request->validated());
 
+            // 2. Return response sukses
             return response()->json([
                 'message' => 'Kode OTP sudah dikirim ke email.',
                 'status' => 'success',
-                'otp' => $otp, // 🟢 tambahkan ke response
+                'otp' => $otp,
             ]);
         } catch (\Exception $e) {
+            // 3. Tangani error
             return response()->json([
                 'message' => $e->getMessage(),
                 'status' => 'error',
@@ -160,8 +181,10 @@ class AuthController extends Controller
     public function verifyOtp(VerifyOtpRequest $request)
     {
         try {
+            // 1. Verifikasi OTP dan generate token reset
             $result = $this->authService->verifyOtp($request->validated());
 
+            // 2. Return token reset untuk ubah password
             return response()->json([
                 'error' => false,
                 'message' => 'success',
@@ -171,6 +194,7 @@ class AuthController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            // 3. Tangani error verifikasi OTP
             return response()->json([
                 'error' => true,
                 'message' => $e->getMessage(),
@@ -178,19 +202,30 @@ class AuthController extends Controller
         }
     }
 
-
     // Fungsi reset password
-   public function resetPassword(ResetPasswordRequest $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
         try {
+            // 1. Gabungkan email dari route/body dengan data password baru
             $data = array_merge($request->validated(), ['email' => $request->email]);
+
+            // 2. Panggil service reset password
             $this->authService->resetPassword($data);
 
+            // 3. Return response sukses
             return response()->json([
                 'message' => 'Password berhasil diubah.',
                 'status' => 'success',
             ]);
+        } catch (ValidationException $e) {
+            // 4. Tangani validasi gagal
+            return response()->json([
+                'message' => 'Validasi gagal.',
+                'errors' => $e->errors(),
+                'status' => 'error',
+            ], 422);
         } catch (\Exception $e) {
+            // 5. Tangani error lain dari service
             return response()->json([
                 'message' => $e->getMessage(),
                 'status' => 'error',
@@ -198,16 +233,18 @@ class AuthController extends Controller
         }
     }
 
-
     // Fungsi logout
     public function logout(LogoutRequest $request)
     {
+        // 1. Ambil pelanggan dari request
         $pelanggan = $request->pelanggan;
 
+        // 2. Kosongkan token dan expired-nya
         $pelanggan->token = null;
         $pelanggan->token_expired_at = null;
         $pelanggan->save();
 
+        // 3. Return response sukses
         return response()->json([
             'message' => 'Logout berhasil',
             'status' => 'sukses',

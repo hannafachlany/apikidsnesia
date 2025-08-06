@@ -8,12 +8,14 @@ class DetailPembelianEvent extends Model
 {
     protected $table = 'detail_pembelian_event';
     protected $primaryKey = 'id_pembelian_event';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_event',
         'jumlah',
         'id_pembelian',
+        'harga_event',
+        'subtotal_event',
     ];
 
     public function event()

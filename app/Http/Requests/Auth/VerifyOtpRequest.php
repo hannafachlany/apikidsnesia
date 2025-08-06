@@ -11,16 +11,17 @@ class VerifyOtpRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    // 1. Izinkan semua user akses
+     public function authorize()
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
      */
+    // 2. Validasi email dan OTP
     public function rules(): array
     {
         return [

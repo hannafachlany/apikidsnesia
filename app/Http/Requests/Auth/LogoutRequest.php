@@ -6,18 +6,18 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class LogoutRequest extends FormRequest
 {
+    // 1. Izinkan hanya user yang sudah login
     public function authorize()
     {
-        // Pastikan hanya user yang sudah login (token valid) yang bisa akses
         return $this->user() != null;
     }
 
+    // 2. Tidak ada field input yang divalidasi
     public function rules()
     {
-        return [
-            // logout biasanya gak butuh body, jadi kosong
-        ];
+        return [];
     }
+
 
     // Bisa juga validasi header token pakai method prepareForValidation() jika mau
 }

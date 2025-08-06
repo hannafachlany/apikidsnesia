@@ -8,45 +8,46 @@ use Carbon\Carbon;
 
 class AdminPembelianEventController extends Controller
 {
-   public function index()
+    // 1. Menampilkan semua data pembelian event (yang sudah checkout)
+    public function index()
     {
-        $data = PembelianEvent::with(['pelanggan', 'pembayaran']) // tambahkan pembayaran
-            ->where('is_checkout', true)
-            ->orderByDesc('tanggal_pembelian')
+        $data = PembelianEvent::with(['pelanggan', 'pembayaran']) // 1.1 Ambil data pembelian beserta pelanggan dan pembayaran
+            ->where('is_checkout', true) // 1.2 Hanya ambil data yang sudah checkout
+            ->orderByDesc('tanggal_pembelian') // 1.3 Urutkan dari yang terbaru
             ->get();
 
         $result = $data->map(function ($pembelian) {
-            return [
+            return [ // 1.4 Format data untuk response
                 'id_pembelian' => $pembelian->id_pembelian,
-                'nama_pelanggan' => $pembelian->pelanggan->nama_pelanggan,
+                'nama_pelanggan' => $pembelian->nama_pelanggan,
                 'tanggal_pembelian' => $pembelian->tanggal_pembelian,
                 'total_pembelian' => $pembelian->total_pembelian,
                 'status_pembelian' => $pembelian->status_pembelian,
-                'id_pembayaran' => optional($pembelian->pembayaran)->id_pembayaran,
+                'id_pembayaran' => optional($pembelian->pembayaran)->id_pembayaran, // 1.5 Gunakan optional jika tidak ada relasi pembayaran
             ];
         });
 
         return response()->json([
             'error' => false,
-            'data' => $result
+            'data' => $result // 1.6 Kembalikan hasil dalam bentuk JSON
         ]);
     }
 
-
+    // 2. Menampilkan detail pembelian event berdasarkan ID
     public function show($id)
     {
-        $pembelian = PembelianEvent::with(['detailEvent.event', 'pelanggan'])
+        $pembelian = PembelianEvent::with(['detailEvent.event', 'pelanggan']) // 2.1 Ambil relasi detail_event, event, dan pelanggan
             ->find($id);
 
         if (!$pembelian) {
             return response()->json([
                 'error' => true,
                 'message' => 'Data tidak ditemukan'
-            ], 404);
+            ], 404); // 2.2 Jika tidak ditemukan, kembalikan error 404
         }
 
         $detail = $pembelian->detailEvent->map(function ($item, $i) {
-            return [
+            return [ // 2.3 Format data detail event
                 'no' => $i + 1,
                 'nama_event' => $item->event->nama_event,
                 'jadwal_event' => Carbon::parse($item->event->tanggal_event)->format('d-m-Y'),
@@ -58,14 +59,14 @@ class AdminPembelianEventController extends Controller
 
         return response()->json([
             'error' => false,
-            'detail' => [
+            'detail' => [ // 2.4 Format data utama pembelian
                 'id_pembelian' => $pembelian->id_pembelian,
                 'id_pembayaran' => optional($pembelian->pembayaran)->id_pembayaran,
                 'tanggal' => $pembelian->tanggal_pembelian,
-                'nama_pelanggan' => $pembelian->pelanggan->nama_pelanggan,
+                'nama_pelanggan' => $pembelian->nama_pelanggan,
                 'total' => $pembelian->total_pembelian,
                 'status' => $pembelian->status_pembelian,
-                'detail_produk' => $detail
+                'detail_produk' => $detail // 2.5 Sertakan detail produk (event-event yang dibeli)
             ]
         ]);
     }

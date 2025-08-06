@@ -15,7 +15,8 @@ class PembelianEvent extends Model
         'total_pembelian',
         'tanggal_pembelian',
         'status_pembelian',
-        'is_checkout'
+        'is_checkout',
+        'nama_pelanggan',
     ];
 
     public function detailEvent()

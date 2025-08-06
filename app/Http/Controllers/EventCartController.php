@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\EventCartService;
-use App\Models\PembelianEvent;
-
 
 class EventCartController extends Controller
 {
+    // 1. Inisialisasi service cart event melalui dependency injection
     protected $cartService;
 
     public function __construct(EventCartService $cartService)
@@ -16,23 +15,15 @@ class EventCartController extends Controller
         $this->cartService = $cartService;
     }
 
-    /**
-     * Simpan cart ke database (belum checkout)
-     */
+    // 2. Menambahkan item ke cart event
     public function store(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user(); // 2.1 Autentikasi user
+        if (!$user) return $this->unauthorizedResponse();
 
-        if (!$user) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Token tidak valid',
-            ], 401);
-        }
+        $items = $request->input('itemsEvent'); // 2.2 Ambil daftar item
 
-        $idPelanggan = $user->id_pelanggan;
-        $items = $request->input('itemsEvent');
-
+        // 2.3 Validasi format array
         if (!is_array($items)) {
             return response()->json([
                 'error' => true,
@@ -40,94 +31,79 @@ class EventCartController extends Controller
             ], 422);
         }
 
-        $transformedItems = collect($items)->map(function ($item) {
-            return [
-                'idEvent' => $item['idEvent'],
-                'jumlah' => $item['jumlahTiket'],
-            ];
-        })->toArray();
+        // 2.4 Ubah struktur data untuk service
+        $transformedItems = collect($items)->map(fn($item) => [
+            'idEvent' => $item['idEvent'],
+            'jumlah' => $item['jumlahTiket'],
+        ])->toArray();
 
+        // 2.5 Kirim ke service
         try {
-            $result = $this->cartService->createCart($idPelanggan, $transformedItems);
-
+            $result = $this->cartService->createCart($user->id_pelanggan, $transformedItems);
             return response()->json([
                 'error' => false,
                 'message' => 'Cart berhasil dibuat',
-                'idPembelianEvent' => $result['idPembelian'],
-                'totalHargaEvent' => $result['total'],
-                'cartEventItem' => $result['cart'],
+                'pembelianEventResponse' => $result['pembelianEventResponse'],
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Gagal membuat cart: ' . $e->getMessage(),
-            ], 500);
+            return $this->serverErrorResponse($e->getMessage());
         }
     }
 
-    /**
-     * Lihat daftar cart pelanggan yang belum checkout
-     */
+    // 3. Menampilkan semua cart yang dimiliki user
     public function listCart(Request $request)
     {
         $user = $request->user();
+        if (!$user) return $this->unauthorizedResponse();
 
-        if (!$user) {
+        try {
+            $result = $this->cartService->listCart($user->id_pelanggan);
             return response()->json([
-                'error' => true,
-                'message' => 'Token tidak valid.',
-            ], 401);
+                'error' => false,
+                'listEventCart' => $result
+            ]);
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse($e->getMessage());
         }
-
-        $result = $this->cartService->listCart($user->id_pelanggan);
-
-        return response()->json([
-            'error' => false,
-            'listCart' => $result
-        ]);
     }
 
-
-    /**
-     * Tampilkan detail isi cart berdasarkan ID pembelian event
-     */
-    public function detailCart($idPembelianEvent)
+    // 4. Menampilkan detail cart tertentu
+    public function detailCart(Request $request, $idPembelianEvent)
     {
-        try {
-            $result = $this->cartService->getCartDetailById($idPembelianEvent);
+        $user = $request->user();
+        if (!$user) return $this->unauthorizedResponse();
 
+        try {
+            $result = $this->cartService->getCartDetailById($idPembelianEvent, $user->id_pelanggan);
             if (!$result) {
                 return response()->json([
                     'error' => true,
-                    'message' => 'Cart tidak ditemukan atau kosong.',
+                    'message' => 'Data pembelian tidak ditemukan atau bukan milik anda.',
                 ], 404);
             }
 
             return response()->json([
                 'error' => false,
-                'cartDetail' => $result
+                'cartEventDetail' => $result
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Gagal mengambil detail cart: ' . $e->getMessage(),
-            ], 500);
+            return $this->serverErrorResponse($e->getMessage());
         }
     }
 
-
-    /**
-     * Hapus cart (belum checkout) beserta semua detail
-     */
-    public function deleteCart($idPembelianEvent)
+    // 5. Menghapus cart
+    public function deleteCart(Request $request, $idPembelianEvent)
     {
+        $user = $request->user();
+        if (!$user) return $this->unauthorizedResponse();
+
         try {
-            $deleted = $this->cartService->deleteCart($idPembelianEvent);
+            $deleted = $this->cartService->deleteCart($idPembelianEvent, $user->id_pelanggan);
 
             if (!$deleted) {
                 return response()->json([
                     'error' => true,
-                    'message' => 'Cart tidak ditemukan atau sudah checkout.',
+                    'message' => 'Data pembelian tidak ditemukan atau bukan milik anda.',
                 ], 404);
             }
 
@@ -136,28 +112,16 @@ class EventCartController extends Controller
                 'message' => 'Cart berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Gagal menghapus cart: ' . $e->getMessage(),
-            ], 500);
+            return $this->serverErrorResponse($e->getMessage());
         }
     }
 
-    /**
-     * Checkout dan kurangi kuota event berdasarkan ID pembelian
-     */
+    // 6. Melakukan checkout cart (ubah status + simpan ke pembelian)
     public function checkout(Request $request, $idPembelianEvent)
     {
         $user = $request->user();
+        if (!$user) return $this->unauthorizedResponse();
 
-        if (!$user) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Token tidak valid',
-            ], 401);
-        }
-
-        $idPelanggan = $user->id_pelanggan;
         $items = $request->input('itemsEvent');
 
         if (!is_array($items)) {
@@ -167,26 +131,47 @@ class EventCartController extends Controller
             ], 422);
         }
 
-        $transformedItems = collect($items)->map(function ($item) {
-            return [
-                'idEvent' => $item['idEvent'],
-                'jumlah' => $item['jumlahTiket'],
-            ];
-        })->toArray();
+        // 6.1 Transformasi data
+        $transformedItems = collect($items)->map(fn($item) => [
+            'idEvent' => $item['idEvent'],
+            'jumlah' => $item['jumlahTiket'],
+        ])->toArray();
 
         try {
-            $result = $this->cartService->checkoutCart($idPembelianEvent, $idPelanggan, $transformedItems);
+            // 6.2 Kirim ke service untuk proses checkout
+            $result = $this->cartService->checkoutCart($idPembelianEvent, $user->id_pelanggan, $transformedItems);
 
             return response()->json([
                 'error' => false,
                 'message' => 'Checkout berhasil',
-                'pembelianEventResponse' => $result
+                'pembelianEventResponse' => [
+                    'idPembelianEvent' => $result['idPembelianEvent'],
+                    'totaHargalEvent' => $result['totalEvent'],
+                    'statusPembelianEvent' => $result['statusPembelianEvent'],
+                    'tanggalPembelianEvent' => $result['tanggalPembelianEvent'],
+                    'cartEventItem' => $result['cartEventItem'],
+                ],
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Checkout gagal: ' . $e->getMessage(),
-            ], 500);
+            return $this->serverErrorResponse($e->getMessage());
         }
+    }
+
+    // 7. Response jika user tidak login atau token invalid
+    protected function unauthorizedResponse()
+    {
+        return response()->json([
+            'error' => true,
+            'message' => 'Tidak memiliki izin atau token tidak valid.'
+        ], 401);
+    }
+
+    // 8. Response jika terjadi error server
+    protected function serverErrorResponse($message = 'Terjadi kesalahan pada server.')
+    {
+        return response()->json([
+            'error' => true,
+            'message' => $message
+        ], 500);
     }
 }

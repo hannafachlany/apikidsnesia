@@ -56,52 +56,67 @@ class AdminDashboardController extends Controller
         }
     }
 
-    public function getFilteredStats(Request $request)
+    public function getLaporan(Request $request)
     {
-        $tanggal = $request->query('tanggal');
-        if (!$tanggal) {
-            return response()->json(['error' => true, 'message' => 'Tanggal tidak ditemukan.'], 400);
+        $tglm = $request->query('tglm');
+        $tgls = $request->query('tgls');
+
+        if (!$tglm || !$tgls) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Tanggal mulai dan selesai wajib diisi.'
+            ], 400);
         }
 
         try {
-            $start = Carbon::parse($tanggal)->subDays(30)->startOfDay();
-            $end = Carbon::parse($tanggal)->endOfDay();
+            $start = Carbon::parse($tglm)->startOfDay();
+            $end = Carbon::parse($tgls)->endOfDay();
 
-            // Pembelian Event: hanya yang sudah checkout dan status_pembelian = 'Berhasil'
-            $pembelianEvent = DB::table('pembelian_event')
-                ->where('is_checkout', 1)
+            // 1. Pembelian Event
+            $event = DB::table('pembelian_event')
+                ->select('nama_pelanggan', 'tanggal_pembelian', 'total_pembelian', 'status_pembelian')
                 ->where('status_pembelian', 'Berhasil')
                 ->whereBetween('tanggal_pembelian', [$start, $end])
-                ->selectRaw('COUNT(*) as jumlah, SUM(total_pembelian) as total')
-                ->first();
+                ->orderBy('tanggal_pembelian', 'desc')
+                ->get();
 
-            // Pembelian Merchandise: hanya yang sudah checkout dan status_pembelian = 'Berhasil'
-            $pembelianMerch = DB::table('pembelian_merchandise')
-                ->where('is_checkout', 1)
-                ->where('status_pembelian', 'Berhasil')
-                ->whereBetween('tanggal_pembelian', [$start, $end])
-                ->selectRaw('COUNT(*) as jumlah, SUM(total_pembelian) as total')
-                ->first();
+            // 2. Pembelian Merchandise
+            $merch = DB::table('pembelian_merchandise')
+                ->join('pelanggan', 'pelanggan.id_pelanggan', '=', 'pembelian_merchandise.id_pelanggan')
+                ->select('pelanggan.nama_pelanggan', 'pembelian_merchandise.tanggal_pembelian', 'pembelian_merchandise.total_pembelian', 'pembelian_merchandise.status_pembelian')
+                ->where('pembelian_merchandise.status_pembelian', 'Berhasil')
+                ->whereBetween('pembelian_merchandise.tanggal_pembelian', [$start, $end])
+                ->orderBy('pembelian_merchandise.tanggal_pembelian', 'desc')
+                ->get();
+
+            // 3. Pembayaran Membership
+           $membership = DB::table('pembayaran_membership')
+                ->select(
+                    'nama_pelanggan',
+                    'waktu_transfer',
+                    'jumlah_transfer',
+                    'status_pembayaran'
+                )
+                ->where('pembayaran_membership.status_pembayaran', 'Berhasil')
+                ->whereBetween('pembayaran_membership.waktu_transfer', [$start, $end])
+                ->orderBy('pembayaran_membership.waktu_transfer', 'desc')
+                ->get();
+
 
             return response()->json([
                 'error' => false,
-                'message' => 'Data berhasil diambil.',
+                'message' => 'Laporan berhasil diambil.',
                 'data' => [
-                    'pembelianEvent' => [
-                        'jumlahPembelian' => $pembelianEvent->jumlah ?? 0,
-                        'totalRupiah' => $pembelianEvent->total ?? 0,
-                    ],
-                    'pembelianMerch' => [
-                        'jumlahPembelian' => $pembelianMerch->jumlah ?? 0,
-                        'totalRupiah' => $pembelianMerch->total ?? 0,
-                    ],
+                    'event' => $event,
+                    'merchandise' => $merch,
+                    'membership' => $membership,
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('getFilteredStats error: ' . $e->getMessage());
+            Log::error('Gagal ambil laporan: ' . $e->getMessage());
             return response()->json([
                 'error' => true,
-                'message' => 'Gagal mengambil data terfilter.',
+                'message' => 'Terjadi kesalahan saat mengambil data.',
                 'debug' => $e->getMessage()
             ], 500);
         }

@@ -11,16 +11,13 @@ class VerifyEmailRequest extends FormRequest
      *
      * @return bool
      */
+    // 1. Izinkan semua user
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
+    // 2. Validasi OTP (harus 6 digit string)
     public function rules()
     {
         return [
@@ -28,11 +25,13 @@ class VerifyEmailRequest extends FormRequest
         ];
     }
 
+    // 3. Pesan kustom
     public function messages()
     {
         return [
             'otp.size' => 'Kode OTP harus 6 digit',
         ];
     }
+
 
 }

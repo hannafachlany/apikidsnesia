@@ -22,5 +22,19 @@ class UpdateEventRequest extends FormRequest
             'foto_event' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
         ];
     }
+    public function messages()
+    {
+        return [
+            'nama_event.max' => 'Nama event tidak boleh lebih dari 255 karakter.',
+            'harga_event.numeric' => 'Harga event harus berupa angka.',
+            'jadwal_event.date' => 'Jadwal event harus berupa tanggal yang valid.',
+            'deskripsi_event.string' => 'Deskripsi event harus berupa teks.',
+            'kuota.integer' => 'Kuota harus berupa angka.',
+            'foto_event.image' => 'File yang diunggah harus berupa gambar.',
+            'foto_event.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'foto_event.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+        ];
+    }
+
 
 }

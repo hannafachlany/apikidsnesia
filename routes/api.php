@@ -19,7 +19,7 @@ use App\Http\Controllers\{
     AdminPembelianMerchController,
     AdminPembayaranMerchController,
     MembershipController,
-    AdminMembershipController,
+    AdminPelangganController,
     DetailEventController,
     AdminVideoController,
     VideoController
@@ -77,20 +77,31 @@ Route::middleware('auth.token')->group(function () {
 
 // ==================== EVENT TRANSACTION (Pelanggan)====================
 Route::prefix('event')->middleware('auth.token')->group(function () {
+    
+    
+
     Route::post('cart', [EventCartController::class, 'store']);
     Route::get('cart/listcart', [EventCartController::class, 'listCart']); // tidak bentrok dengan {id}
     Route::get('cart/{idPembelianEvent}', [EventCartController::class, 'detailCart']);
     Route::patch('cart/{idPembelianEvent}/update-jumlah', [EventCartController::class, 'updateJumlahTiket']);
     Route::delete('cart/{idPembelianEvent}', [EventCartController::class, 'deleteCart']);
     Route::post('checkout/{idPembelianEvent}', [EventCartController::class, 'checkout']);
+    Route::get('checkout/nota', [PembayaranEventController::class, 'listNotaBelumPilihBank']);
+    Route::get('checkout/nota/{idPembelianEvent}', [PembayaranEventController::class, 'notaBelumPilihBank']);
+    
 
     // Pembayaran
     Route::get('pembayaran/{idPembelianEvent}', [PembayaranEventController::class, 'getDetailBayar']);
-    Route::post('pembayaran/pilih-bank', [PembayaranEventController::class, 'pilihBank']);
+    Route::post('pembayaran/pilih-bank/{idPembelianEvent}', [PembayaranEventController::class, 'pilihBank']);
     Route::post('pembayaran/{idPembayaranEvent}/upload-bukti', [PembayaranEventController::class, 'uploadBukti']);
-    Route::get('nota/{idPembelianEvent}', [PembayaranEventController::class, 'notaPembelian']);
-});
 
+   
+});
+Route::middleware('auth.token')->group(function () {
+ //nota pembelian
+     Route::get('nota-event', [PembayaranEventController::class, 'listNotaPembelian']); // ✅ List semua nota user
+    Route::get('nota-event/{idPembelianEvent}', [PembayaranEventController::class, 'notaPembelian']);
+});
 // ==================== MERCH TRANSACTION (Pelanggan) ====================
 Route::prefix('merch')->middleware('auth.token')->group(function () {
     // CART
@@ -99,18 +110,23 @@ Route::prefix('merch')->middleware('auth.token')->group(function () {
     Route::get('cart/{idPembelianMerch}', [MerchCartController::class, 'detailCart']);
     Route::delete('cart/{idPembelianMerch}', [MerchCartController::class, 'deleteCart']);
     Route::post('checkout/{idPembelianMerch}', [MerchCartController::class, 'checkout']);
+    Route::get('checkout/nota', [PembayaranMerchController::class, 'listNotaBelumPilihBank']);
+    Route::get('checkout/nota/{idPembelianMerch}', [PembayaranMerchController::class, 'notaBelumPilihBank']);
 
     // PEMBAYARAN
     Route::prefix('pembayaran')->group(function () {
         Route::get('/{idPembelianMerch}', [PembayaranMerchController::class, 'getDetailBayar']);
-        Route::post('/pilih-bank', [PembayaranMerchController::class, 'pilihBank']);
+        Route::post('/pilih-bank/{idPembayaranMerch}', [PembayaranMerchController::class, 'pilihBank']);
         Route::post('/{idPembayaranMerch}/upload-bukti', [PembayaranMerchController::class, 'uploadBukti']);
     });
 
-    // NOTA
-    Route::get('nota/{idPembelianMerch}', [PembayaranMerchController::class, 'notaPembelian']);
 });
 
+Route::middleware('auth.token')->group(function () {
+    // NOTA
+    Route::get('nota-merch', [PembayaranMerchController::class, 'listNotaPembelian']);
+    Route::get('nota-merch/{idPembelianMerch}', [PembayaranMerchController::class, 'notaPembelian']);
+});
 // ==================== VIDEO (PELANGGAN) ====================
 Route::prefix('videos')->middleware('auth.token')->group(function () {
     Route::get('/', [VideoController::class, 'index']); // bisa diakses siapa saja yang login
@@ -122,8 +138,7 @@ Route::prefix('admin')->group(function () {
 
     //dashboard
     Route::get('dashboard/stats', [AdminDashboardController::class, 'getDashboardStats']);
-    
-    Route::get('dashboard/stats-by-date', [AdminDashboardController::class, 'getFilteredStats']);
+    Route::get('dashboard/laporan', [AdminDashboardController::class, 'getLaporan']);   
     //akses event
     Route::get('event', [EventController::class, 'showAll']);
     Route::post('event', [EventController::class, 'store']);
@@ -151,9 +166,10 @@ Route::prefix('admin')->group(function () {
     Route::patch('pembayaran-merch/{id}/status', [AdminPembayaranMerchController::class, 'updateStatus']);
     
     //pelanggan & membership
-    Route::get('/pelanggan', [AdminMembershipController::class, 'index']);
-    Route::get('/pembayaran-membership/{id}', [AdminMembershipController::class, 'showPembayaranByMembership']);
-    Route::put('/pembayaran-membership/{id}', [AdminMembershipController::class, 'updateStatus']);
+    Route::get('/pelanggan', [AdminPelangganController::class, 'index']);
+    Route::get('/pembayaran-membership/{id}', [AdminPelangganController::class, 'showPembayaranByMembership']);
+    Route::put('/pembayaran-membership/{id}', [AdminPelangganController::class, 'updateStatus']);
+    Route::delete('/pelanggan/{id}', [AdminPelangganController::class, 'destroy']); // TAMBAHKAN
 
     //detail event
     Route::get('/detail-event', [DetailEventController::class, 'listAll']);

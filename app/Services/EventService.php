@@ -1,23 +1,27 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\Event;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class EventService
 {
+    // 1. Menyimpan event baru ke database
     public function storeEvent(array $data, $fotoFile = null)
     {
+        // 1.1 Simpan foto jika ada
         if ($fotoFile) {
             $filename = uniqid() . '.' . $fotoFile->getClientOriginalExtension();
             $fotoFile->storeAs('public/event', $filename);
             $data['foto_event'] = $filename;
         }
 
+        // 1.2 Buat event baru
         $event = Event::create($data);
 
+        // 1.3 Kembalikan response
         return [
             'statusCode' => 201,
             'message' => 'Event berhasil dibuat',
@@ -26,13 +30,15 @@ class EventService
                 'nama_event' => $event->nama_event,
                 'foto_event' => asset('storage/event/' . $event->foto_event),
                 'harga_event' => $event->harga_event,
-                'jadwal_event' => $event->jadwal_event,
+                'tanggalEvent' => Carbon::parse($event->jadwal_event)->format('d-m-Y'),
+                'jadwalEvent' => Carbon::parse($event->jadwal_event)->format('H:i'),
                 'deskripsi_event' => $event->deskripsi_event,
                 'kuota' => $event->kuota,
             ]
         ];
     }
 
+    // 2. Memperbarui data event
     public function updateEvent($idEvent, array $data, $fotoFile = null)
     {
         $event = Event::find($idEvent);
@@ -43,6 +49,7 @@ class EventService
             ];
         }
 
+        // 2.1 Jika ada foto baru, hapus lama & simpan baru
         if ($fotoFile) {
             if ($event->foto_event && Storage::exists('public/event/' . $event->foto_event)) {
                 Storage::delete('public/event/' . $event->foto_event);
@@ -55,6 +62,7 @@ class EventService
             Log::info("Foto event diperbarui:", ['filename' => $filename]);
         }
 
+        // 2.2 Update data event
         $event->update($data);
 
         return [
@@ -65,6 +73,7 @@ class EventService
         ];
     }
 
+    // 3. Menghapus event
     public function deleteEvent($idEvent)
     {
         $event = Event::find($idEvent);
@@ -75,10 +84,12 @@ class EventService
             ];
         }
 
+        // 3.1 Hapus file foto dari storage jika ada
         if ($event->foto_event && Storage::exists('public/event/' . $event->foto_event)) {
             Storage::delete('public/event/' . $event->foto_event);
         }
 
+        // 3.2 Hapus event dari database
         $event->delete();
 
         return [
@@ -87,13 +98,15 @@ class EventService
         ];
     }
 
+    // 4. Menampilkan semua event (termasuk detail foto kegiatan)
     public function showAll()
     {
         $events = Event::with('detailFoto')->get()->map(function ($event) {
             return [
                 'idEvent' => $event->id_event,
                 'namaEvent' => $event->nama_event,
-                'jadwalEvent' => $event->jadwal_event,
+                'tanggalEvent' => Carbon::parse($event->jadwal_event)->format('d-m-Y'),
+                'jadwalEvent' => Carbon::parse($event->jadwal_event)->format('H:i'),
                 'fotoEvent' => url('storage/event/' . $event->foto_event),
                 'deskripsiEvent' => $event->deskripsi_event,
                 'kuota' => $event->kuota,
@@ -112,6 +125,7 @@ class EventService
         ];
     }
 
+    // 5. Menampilkan detail event berdasarkan ID (dengan foto kegiatan)
     public function show($idEvent)
     {
         $event = Event::with('detailFoto')->find($idEvent);
@@ -132,7 +146,8 @@ class EventService
             'detailEvent' => [
                 'idEvent' => $event->id_event,
                 'namaEvent' => $event->nama_event,
-                'jadwalEvent' => $event->jadwal_event,
+                'tanggalEvent' => Carbon::parse($event->jadwal_event)->format('d-m-Y'),
+                'jadwalEvent' => Carbon::parse($event->jadwal_event)->format('H:i'),
                 'fotoEvent' => url('storage/event/' . $event->foto_event),
                 'deskripsiEvent' => $event->deskripsi_event,
                 'kuota' => $event->kuota,

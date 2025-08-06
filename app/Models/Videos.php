@@ -12,6 +12,7 @@ class Videos extends Model
         'judul_video',
         'deskripsi_video',
         'file_path',
+        'thumbnail_video'
     ];
 
     public $timestamps = true;
