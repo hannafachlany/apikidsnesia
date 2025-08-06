@@ -1,18 +1,43 @@
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
+# =================================
+# ENVIRONMENT
+# =================================
 .env
-.env.backup
-.env.production
+.env.*
+storage/*.key
+
+# =================================
+# DEPENDENCIES
+# =================================
+
+node_modules/
+
+# =================================
+# STORAGE (Laravel cache & logs)
+# =================================
+storage/logs/
+storage/framework/
+
+# Symlink public storage
+public/storage/
+
+# =================================
+# BUILD (Vite / frontend assets)
+# =================================
+public/build/
+public/hot/
+
+# =================================
+# TEMP FILES / DEBUG / TEST
+# =================================
+npm-debug.log*
+yarn-error.log*
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
+
+# =================================
+# LOCAL / PERSONAL CONFIG
+# =================================
+Homestead.*
 auth.json
-npm-debug.log
-yarn-error.log
-/.fleet
-/.idea
-/.vscode
+.fleet/
+.idea/
+.vscode/
