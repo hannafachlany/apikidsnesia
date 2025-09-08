@@ -15,15 +15,15 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'admin/*', 'event/*', 'merch/*', 'membership/*'], // ✅ Tambahkan path yang digunakan di route kamu
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['*'], // izinkan semua metode: GET, POST, PUT, dll
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*'], // izinkan semua origin (boleh fetch dari localhost, ngrok, dll)
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['*'], // izinkan semua header
 
     'exposed_headers' => [],
 
